@@ -31,58 +31,171 @@
       </div>
     </div>
 
-    <!-- STEP 1: Customize Your Preferences & Bitmoji-Style Avatar -->
+    <!-- STEP 1: Snapchat Bitmoji-Style Avatar Builder + Preferences -->
     <section id="step1Section" class="card">
       <h2 style="margin-bottom: 6px;">Step 1: Customize Your Avatar &amp; Preferences</h2>
       <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.95rem;">
         Build your personal character and set your thermal sensitivity so your avatar dresses for today's weather.
       </p>
 
-      <!-- Interactive Avatar Builder -->
+      <!-- Snapchat Bitmoji-Style Avatar Creator -->
       <div class="avatar-creator-box">
-        <div class="avatar-stage" id="step1AvatarMount">
-          <!-- Illustrated SVG Character injected here by app.js -->
+        <div class="avatar-stage-wrapper">
+          <div class="avatar-stage" id="step1AvatarMount"></div>
+          <span class="avatar-stage-caption">Live Character Preview</span>
         </div>
 
         <div class="avatar-controls">
+          <!-- 1. Skin Tone Tiles -->
           <div class="control-row">
-            <span>Skin Tone</span>
-            <div class="swatch-group" id="skinSwatches">
-              <button type="button" class="color-swatch active" data-skin="#ffdbac" style="background:#ffdbac;" aria-label="Light"></button>
-              <button type="button" class="color-swatch" data-skin="#f1c27d" style="background:#f1c27d;" aria-label="Warm Ivory"></button>
-              <button type="button" class="color-swatch" data-skin="#e0ac69" style="background:#e0ac69;" aria-label="Medium Tan"></button>
-              <button type="button" class="color-swatch" data-skin="#c68642" style="background:#c68642;" aria-label="Rich Olive"></button>
-              <button type="button" class="color-swatch" data-skin="#8d5524" style="background:#8d5524;" aria-label="Deep Brown"></button>
-              <button type="button" class="color-swatch" data-skin="#5c3818" style="background:#5c3818;" aria-label="Espresso"></button>
+            <div class="control-row-header">
+              <span>1. Skin Tone</span>
+              <strong id="skinNameLabel">Porcelain</strong>
+            </div>
+            <div class="bitmoji-grid" id="skinSwatches">
+              <button type="button" class="bitmoji-tile active" data-skin="#ffdbac" data-name="Porcelain">
+                <span class="swatch-circle" style="background:#ffdbac;"></span>
+                <span>Porcelain</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-skin="#f1c27d" data-name="Warm Ivory">
+                <span class="swatch-circle" style="background:#f1c27d;"></span>
+                <span>Warm Ivory</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-skin="#e0ac69" data-name="Golden Tan">
+                <span class="swatch-circle" style="background:#e0ac69;"></span>
+                <span>Golden Tan</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-skin="#c68642" data-name="Rich Olive">
+                <span class="swatch-circle" style="background:#c68642;"></span>
+                <span>Rich Olive</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-skin="#8d5524" data-name="Deep Brown">
+                <span class="swatch-circle" style="background:#8d5524;"></span>
+                <span>Deep Brown</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-skin="#5c3818" data-name="Espresso">
+                <span class="swatch-circle" style="background:#5c3818;"></span>
+                <span>Espresso</span>
+              </button>
             </div>
           </div>
 
+          <!-- 2. Hairstyle Visual Cards -->
           <div class="control-row">
-            <span>Hairstyle</span>
-            <div class="swatch-group" id="hairStylePills">
-              <button type="button" class="style-pill active" data-hair="short">Short Crop</button>
-              <button type="button" class="style-pill" data-hair="long">Long Waves</button>
-              <button type="button" class="style-pill" data-hair="bun">Top Bun</button>
-              <button type="button" class="style-pill" data-hair="curly">Curly Afro</button>
+            <div class="control-row-header">
+              <span>2. Hairstyle</span>
+              <strong id="hairStyleLabel">Short Crop</strong>
+            </div>
+            <div class="bitmoji-grid" id="hairStylePills">
+              <button type="button" class="bitmoji-tile active" data-hair="short" data-name="Short Crop">
+                <svg class="hair-thumb" viewBox="0 0 60 60">
+                  <circle cx="30" cy="34" r="16" fill="#e0ac69"/>
+                  <path d="M14 30 C14 14, 46 14, 46 30 C42 22, 18 22, 14 30 Z" fill="#1f1a17"/>
+                </svg>
+                <span>Short Crop</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-hair="long" data-name="Long Waves">
+                <svg class="hair-thumb" viewBox="0 0 60 60">
+                  <path d="M12 28 C8 40, 10 54, 14 56 L46 56 C50 54, 52 40, 48 28 Z" fill="#1f1a17"/>
+                  <circle cx="30" cy="34" r="15" fill="#e0ac69"/>
+                  <path d="M14 30 C14 14, 46 14, 46 30 C38 22, 24 22, 14 30 Z" fill="#1f1a17"/>
+                </svg>
+                <span>Long Waves</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-hair="bun" data-name="Top Bun">
+                <svg class="hair-thumb" viewBox="0 0 60 60">
+                  <circle cx="30" cy="12" r="9" fill="#1f1a17"/>
+                  <circle cx="30" cy="34" r="16" fill="#e0ac69"/>
+                  <path d="M14 30 C14 16, 46 16, 46 30 C38 22, 22 22, 14 30 Z" fill="#1f1a17"/>
+                </svg>
+                <span>Top Bun</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-hair="curly" data-name="Curly Afro">
+                <svg class="hair-thumb" viewBox="0 0 60 60">
+                  <circle cx="16" cy="24" r="9" fill="#1f1a17"/>
+                  <circle cx="44" cy="24" r="9" fill="#1f1a17"/>
+                  <circle cx="30" cy="17" r="12" fill="#1f1a17"/>
+                  <circle cx="30" cy="34" r="15" fill="#e0ac69"/>
+                </svg>
+                <span>Curly Afro</span>
+              </button>
             </div>
           </div>
 
+          <!-- 3. Hair Color Tiles -->
           <div class="control-row">
-            <span>Hair Color</span>
-            <div class="swatch-group" id="hairColorSwatches">
-              <button type="button" class="color-swatch active" data-hcolor="#1f1a17" style="background:#1f1a17;" aria-label="Jet Black"></button>
-              <button type="button" class="color-swatch" data-hcolor="#4a2e1b" style="background:#4a2e1b;" aria-label="Dark Brown"></button>
-              <button type="button" class="color-swatch" data-hcolor="#8c4a27" style="background:#8c4a27;" aria-label="Auburn"></button>
-              <button type="button" class="color-swatch" data-hcolor="#d4a359" style="background:#d4a359;" aria-label="Blonde"></button>
-              <button type="button" class="color-swatch" data-hcolor="#e0683b" style="background:#e0683b;" aria-label="Terracotta Dye"></button>
+            <div class="control-row-header">
+              <span>3. Hair Color</span>
+              <strong id="hairColorLabel">Jet Black</strong>
+            </div>
+            <div class="bitmoji-grid" id="hairColorSwatches">
+              <button type="button" class="bitmoji-tile active" data-hcolor="#1f1a17" data-name="Jet Black">
+                <span class="swatch-circle" style="background:#1f1a17;"></span>
+                <span>Jet Black</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-hcolor="#4a2e1b" data-name="Dark Brown">
+                <span class="swatch-circle" style="background:#4a2e1b;"></span>
+                <span>Dark Brown</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-hcolor="#8c4a27" data-name="Auburn">
+                <span class="swatch-circle" style="background:#8c4a27;"></span>
+                <span>Auburn</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-hcolor="#d4a359" data-name="Blonde">
+                <span class="swatch-circle" style="background:#d4a359;"></span>
+                <span>Blonde</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-hcolor="#e0683b" data-name="Copper">
+                <span class="swatch-circle" style="background:#e0683b;"></span>
+                <span>Copper</span>
+              </button>
             </div>
           </div>
 
+          <!-- 4. Clothing Style Aesthetic (Snapchat Outfit Picker) -->
           <div class="control-row">
-            <span>Eyewear &amp; Vibe</span>
-            <div class="swatch-group">
-              <button type="button" class="style-pill" id="toggleGlassesBtn">Glasses: Off</button>
-              <button type="button" class="style-pill active" id="toggleSmileBtn">Mood: Happy</button>
+            <div class="control-row-header">
+              <span>4. Avatar Outfit Style</span>
+              <strong id="avatarStyleLabel">Casual</strong>
+            </div>
+            <div class="bitmoji-grid" id="avatarStylePills">
+              <button type="button" class="bitmoji-tile active" data-astyle="casual" data-name="Casual">
+                <span style="font-size:1.3rem;">👕</span>
+                <span>Casual</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-astyle="formal" data-name="Formal / Business">
+                <span style="font-size:1.3rem;">👔</span>
+                <span>Formal</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-astyle="athletic" data-name="Athletic / Sporty">
+                <span style="font-size:1.3rem;">🏃</span>
+                <span>Athletic</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-astyle="streetwear" data-name="Streetwear">
+                <span style="font-size:1.3rem;">🧢</span>
+                <span>Streetwear</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-astyle="cozy" data-name="Cozy / Lounge">
+                <span style="font-size:1.3rem;">🧶</span>
+                <span>Cozy</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 5. Eyewear & Expression -->
+          <div class="control-row">
+            <div class="control-row-header">
+              <span>5. Eyewear &amp; Expression</span>
+            </div>
+            <div class="bitmoji-grid">
+              <button type="button" class="bitmoji-tile" id="toggleGlassesBtn">
+                <span style="font-size:1.3rem;">👓</span>
+                <span id="glassesText">Glasses: Off</span>
+              </button>
+              <button type="button" class="bitmoji-tile active" id="toggleSmileBtn">
+                <span style="font-size:1.3rem;" id="moodEmoji">😄</span>
+                <span id="moodText">Happy Smile</span>
+              </button>
             </div>
           </div>
         </div>
@@ -197,7 +310,6 @@
 
     <!-- STEP 2: Today's Weather & Personalized Outfit -->
     <section id="step2Section" class="hidden">
-      <!-- Live Demo Override Bar -->
       <div class="demo-bar" style="margin-bottom: 16px;">
         <span>Live Demo Presets:</span>
         <button class="demo-chip active" data-preset="live" type="button">Live API</button>
@@ -207,7 +319,6 @@
         <button class="demo-chip" data-preset="summer" type="button">Humid Sun (86°F)</button>
       </div>
 
-      <!-- City Search -->
       <form id="citySearchForm" class="search-bar">
         <input
           type="text"
@@ -219,9 +330,7 @@
         <button type="submit" class="btn-primary">Check Weather</button>
       </form>
 
-      <!-- Main Grid -->
       <div class="dashboard-grid">
-        <!-- Left Card: Weather Telemetry -->
         <div class="card" style="margin-bottom: 0;">
           <div class="weather-header-row">
             <h3 id="locationTitle">Rochester, NY</h3>
@@ -237,15 +346,12 @@
           </div>
         </div>
 
-        <!-- Right Card: Custom Avatar & Layer Breakdown -->
         <div class="card" style="margin-bottom: 0;">
           <h3>Recommended Outfit</h3>
           <div class="avatar-and-outfit-container">
             <div class="avatar-box">
               <h4>Your Avatar</h4>
-              <div class="model-avatar-container" id="step2AvatarMount">
-                <!-- Customized character wearing today's outfit injected here -->
-              </div>
+              <div class="model-avatar-container" id="step2AvatarMount"></div>
             </div>
 
             <div class="outfit-details">
@@ -266,7 +372,6 @@
         </div>
       </div>
 
-      <!-- Bottom Card: Quick Gear Q&A Assistant -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
           <h3>Commuter Gear Assistant</h3>
