@@ -31,12 +31,62 @@
       </div>
     </div>
 
-    <!-- STEP 1: Customize Your Preferences (Matches Screenshot) -->
+    <!-- STEP 1: Customize Your Preferences & Bitmoji-Style Avatar -->
     <section id="step1Section" class="card">
-      <h2 style="margin-bottom: 6px;">Step 1: Customize Your Preferences</h2>
-      <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem;">
-        Help us understand your thermal sensitivity and wardrobe preferences across all clothing categories.
+      <h2 style="margin-bottom: 6px;">Step 1: Customize Your Avatar &amp; Preferences</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.95rem;">
+        Build your personal character and set your thermal sensitivity so your avatar dresses for today's weather.
       </p>
+
+      <!-- Interactive Avatar Builder -->
+      <div class="avatar-creator-box">
+        <div class="avatar-stage" id="step1AvatarMount">
+          <!-- Illustrated SVG Character injected here by app.js -->
+        </div>
+
+        <div class="avatar-controls">
+          <div class="control-row">
+            <span>Skin Tone</span>
+            <div class="swatch-group" id="skinSwatches">
+              <button type="button" class="color-swatch active" data-skin="#ffdbac" style="background:#ffdbac;" aria-label="Light"></button>
+              <button type="button" class="color-swatch" data-skin="#f1c27d" style="background:#f1c27d;" aria-label="Warm Ivory"></button>
+              <button type="button" class="color-swatch" data-skin="#e0ac69" style="background:#e0ac69;" aria-label="Medium Tan"></button>
+              <button type="button" class="color-swatch" data-skin="#c68642" style="background:#c68642;" aria-label="Rich Olive"></button>
+              <button type="button" class="color-swatch" data-skin="#8d5524" style="background:#8d5524;" aria-label="Deep Brown"></button>
+              <button type="button" class="color-swatch" data-skin="#5c3818" style="background:#5c3818;" aria-label="Espresso"></button>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <span>Hairstyle</span>
+            <div class="swatch-group" id="hairStylePills">
+              <button type="button" class="style-pill active" data-hair="short">Short Crop</button>
+              <button type="button" class="style-pill" data-hair="long">Long Waves</button>
+              <button type="button" class="style-pill" data-hair="bun">Top Bun</button>
+              <button type="button" class="style-pill" data-hair="curly">Curly Afro</button>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <span>Hair Color</span>
+            <div class="swatch-group" id="hairColorSwatches">
+              <button type="button" class="color-swatch active" data-hcolor="#1f1a17" style="background:#1f1a17;" aria-label="Jet Black"></button>
+              <button type="button" class="color-swatch" data-hcolor="#4a2e1b" style="background:#4a2e1b;" aria-label="Dark Brown"></button>
+              <button type="button" class="color-swatch" data-hcolor="#8c4a27" style="background:#8c4a27;" aria-label="Auburn"></button>
+              <button type="button" class="color-swatch" data-hcolor="#d4a359" style="background:#d4a359;" aria-label="Blonde"></button>
+              <button type="button" class="color-swatch" data-hcolor="#e0683b" style="background:#e0683b;" aria-label="Terracotta Dye"></button>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <span>Eyewear &amp; Vibe</span>
+            <div class="swatch-group">
+              <button type="button" class="style-pill" id="toggleGlassesBtn">Glasses: Off</button>
+              <button type="button" class="style-pill active" id="toggleSmileBtn">Mood: Happy</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Slider 1: Cold Threshold -->
       <div class="survey-group">
@@ -187,24 +237,14 @@
           </div>
         </div>
 
-        <!-- Right Card: SVG Avatar & Layer Breakdown -->
+        <!-- Right Card: Custom Avatar & Layer Breakdown -->
         <div class="card" style="margin-bottom: 0;">
           <h3>Recommended Outfit</h3>
           <div class="avatar-and-outfit-container">
             <div class="avatar-box">
-              <h4>Layer Preview</h4>
-              <div class="model-avatar-container">
-                <svg class="human-silhouette" viewBox="0 0 100 220" role="img" aria-label="Outfit Layer Preview">
-                  <circle cx="50" cy="26" r="14" fill="#d1d5db" />
-                  <path id="svgHat" d="M35 22 Q50 4 65 22 Z" fill="transparent" />
-                  <rect id="svgTorso" x="30" y="45" width="40" height="68" rx="10" fill="#e0683b" />
-                  <rect id="svgLeftArm" x="16" y="48" width="11" height="58" rx="5" fill="#e0683b" />
-                  <rect id="svgRightArm" x="73" y="48" width="11" height="58" rx="5" fill="#e0683b" />
-                  <rect id="svgLeftLeg" x="32" y="117" width="15" height="72" rx="6" fill="#4b5563" />
-                  <rect id="svgRightLeg" x="53" y="117" width="15" height="72" rx="6" fill="#4b5563" />
-                  <rect id="svgLeftShoe" x="29" y="191" width="19" height="12" rx="4" fill="#1f2937" />
-                  <rect id="svgRightShoe" x="52" y="191" width="19" height="12" rx="4" fill="#1f2937" />
-                </svg>
+              <h4>Your Avatar</h4>
+              <div class="model-avatar-container" id="step2AvatarMount">
+                <!-- Customized character wearing today's outfit injected here -->
               </div>
             </div>
 
