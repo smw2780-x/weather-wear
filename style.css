@@ -498,6 +498,102 @@ input[type="range"] {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
+   /* ==========================================
+   BITMOJI-STYLE AVATAR CREATOR ADD-ONS
+   ========================================== */
+.avatar-creator-box {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  background: rgba(15, 12, 11, 0.55);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.avatar-stage {
+  width: 145px;
+  height: 230px;
+  background: radial-gradient(circle at 50% 35%, rgba(224, 104, 59, 0.18), rgba(15, 12, 11, 0.9));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.65);
+}
+
+.avatar-controls {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.control-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-row span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
+}
+
+.swatch-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.color-swatch.active,
+.color-swatch:hover {
+  border-color: #ffffff;
+  transform: scale(1.12);
+  box-shadow: 0 0 10px rgba(224, 104, 59, 0.6);
+}
+
+.style-pill {
+  background: #2a2320;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.style-pill.active,
+.style-pill:hover {
+  background: var(--primary-color);
+  color: #ffffff;
+  border-color: var(--primary-color);
+}
+
+.model-avatar-container {
+  width: 135px;
+  height: 230px;
+}
   .avatar-and-outfit-container {
     flex-direction: column;
   }
