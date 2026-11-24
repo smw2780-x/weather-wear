@@ -2,6 +2,13 @@ const state = {
   unit: "F", // "F" or "C"
   coldThresholdF: 50,
   hotThresholdF: 80,
+  avatar: {
+    skin: "#ffdbac",
+    hairStyle: "short", // short, long, bun, curly
+    hairColor: "#1f1a17",
+    glasses: false,
+    mood: "happy" // happy, cool
+  },
   preferences: {
     styles: ["Casual"],
     tops: ["T-Shirts", "Button-ups / Polos", "Long Sleeve Shirts"],
@@ -26,6 +33,238 @@ const PRESETS = {
   fall: { city: "Rochester, NY (Demo)", tempF: 62, feelsLikeF: 60, windMph: 7, precipMm: 0.0, condition: "Partly Cloudy" },
   summer: { city: "Rochester, NY (Demo)", tempF: 86, feelsLikeF: 90, windMph: 5, precipMm: 0.0, condition: "Sunny & Humid" }
 };
+
+// Build Bitmoji-Style Illustrated SVG Character
+function buildCharacterSVG(outfit = { tier: "casual", beanie: false, sunglasses: false, scarf: false, shorts: false, boots: false }) {
+  const { skin, hairStyle, hairColor, glasses, mood } = state.avatar;
+
+  // Back hair layer (for long waves / curly afro)
+  let backHair = "";
+  if (hairStyle === "long") {
+    backHair = `<path d="M44 48 C34 72, 34 115, 42 135 L118 135 C126 115, 126 72, 116 48 Z" fill="${hairColor}" />`;
+  } else if (hairStyle === "curly") {
+    backHair = `
+      <circle cx="48" cy="46" r="16" fill="${hairColor}" />
+      <circle cx="112" cy="46" r="16" fill="${hairColor}" />
+      <circle cx="44" cy="66" r="15" fill="${hairColor}" />
+      <circle cx="116" cy="66" r="15" fill="${hairColor}" />
+      <circle cx="80" cy="34" r="22" fill="${hairColor}" />
+    `;
+  } else if (hairStyle === "bun") {
+    backHair = `<circle cx="80" cy="22" r="15" fill="${hairColor}" />`;
+  }
+
+  // Front hair / bangs (hidden if wearing a winter beanie)
+  let frontHair = "";
+  if (!outfit.beanie) {
+    if (hairStyle === "short") {
+      frontHair = `<path d="M51 54 C51 30, 109 30, 109 54 C104 42, 56 42, 51 54 Z" fill="${hairColor}" />`;
+    } else if (hairStyle === "long" || hairStyle === "bun") {
+      frontHair = `<path d="M50 56 C50 28, 110 28, 110 56 C98 40, 74 42, 50 56 Z" fill="${hairColor}" />`;
+    } else if (hairStyle === "curly") {
+      frontHair = `
+        <circle cx="58" cy="38" r="12" fill="${hairColor}" />
+        <circle cx="80" cy="34" r="14" fill="${hairColor}" />
+        <circle cx="102" cy="38" r="12" fill="${hairColor}" />
+      `;
+    }
+  }
+
+  // Beanie hat overlay
+  const beanieSVG = outfit.beanie
+    ? `
+      <path d="M49 52 C49 24, 111 24, 111 52 Z" fill="#e0683b" />
+      <rect x="47" y="47" width="66" height="11" rx="5" fill="#f59e0b" />
+      <circle cx="80" cy="22" r="7" fill="#f59e0b" />
+    `
+    : "";
+
+  // Eyewear (Sunglasses override in hot sun, otherwise user's glasses)
+  let eyewearSVG = "";
+  if (outfit.sunglasses) {
+    eyewearSVG = `
+      <rect x="57" y="57" width="19" height="11" rx="3" fill="#111827" stroke="#f59e0b" stroke-width="1.5" />
+      <rect x="84" y="57" width="19" height="11" rx="3" fill="#111827" stroke="#f59e0b" stroke-width="1.5" />
+      <line x1="76" y1="61" x2="84" y2="61" stroke="#f59e0b" stroke-width="2" />
+    `;
+  } else if (glasses) {
+    eyewearSVG = `
+      <rect x="57" y="56" width="19" height="12" rx="3" fill="rgba(255,255,255,0.12)" stroke="#e5e7eb" stroke-width="1.8" />
+      <rect x="84" y="56" width="19" height="12" rx="3" fill="rgba(255,255,255,0.12)" stroke="#e5e7eb" stroke-width="1.8" />
+      <line x1="76" y1="61" x2="84" y2="61" stroke="#e5e7eb" stroke-width="1.8" />
+    `;
+  }
+
+  // Expression
+  const mouthSVG =
+    mood === "cool"
+      ? `<path d="M72 78 Q82 81 90 75" fill="none" stroke="#3f2a1d" stroke-width="2.5" stroke-linecap="round" />`
+      : `<path d="M70 76 Q80 86 90 76" fill="none" stroke="#3f2a1d" stroke-width="2.5" stroke-linecap="round" />`;
+
+  // Clothing Palette & Layer Geometry
+  let topColor = "#e0683b";
+  let sleeveColor = "#e0683b";
+  let shortSleeves = false;
+  let pufferRibs = "";
+  let hoodieStrings = "";
+
+  if (outfit.tier === "puffer") {
+    topColor = "#2563eb";
+    sleeveColor = "#1d4ed8";
+    pufferRibs = `
+      <line x1="46" y1="115" x2="114" y2="115" stroke="#1e40af" stroke-width="2" />
+      <line x1="46" y1="135" x2="114" y2="135" stroke="#1e40af" stroke-width="2" />
+      <line x1="46" y1="155" x2="114" y2="155" stroke="#1e40af" stroke-width="2" />
+      <line x1="80" y1="98" x2="80" y2="174" stroke="#93c5fd" stroke-width="2" />
+    `;
+  } else if (outfit.tier === "hoodie") {
+    topColor = "#e0683b";
+    sleeveColor = "#c8562b";
+    hoodieStrings = `
+      <line x1="73" y1="100" x2="73" y2="124" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" />
+      <line x1="87" y1="100" x2="87" y2="124" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" />
+    `;
+  } else if (outfit.tier === "tshirt") {
+    topColor = "#10b981";
+    sleeveColor = "#059669";
+    shortSleeves = true;
+  }
+
+  const scarfSVG = outfit.scarf
+    ? `<rect x="58" y="92" width="44" height="13" rx="6" fill="#f59e0b" />
+       <rect x="86" y="100" width="11" height="28" rx="4" fill="#d97706" />`
+    : "";
+
+  const pantsColor = outfit.shorts ? "#64748b" : "#334155";
+  const shoeColor = outfit.boots ? "#78350f" : "#f3f4f6";
+
+  return `
+    <svg viewBox="0 0 160 280" style="width:100%; height:100%;" role="img" aria-label="Custom Character Avatar">
+      ${backHair}
+
+      <!-- Neck -->
+      <rect x="71" y="84" width="18" height="18" rx="6" fill="${skin}" />
+
+      <!-- Ears -->
+      <circle cx="51" cy="63" r="6" fill="${skin}" />
+      <circle cx="109" cy="63" r="6" fill="${skin}" />
+
+      <!-- Head -->
+      <rect x="52" y="34" width="56" height="56" rx="26" fill="${skin}" />
+
+      <!-- Eyes -->
+      <circle cx="67" cy="62" r="3.5" fill="#1f1a17" />
+      <circle cx="93" cy="62" r="3.5" fill="#1f1a17" />
+      <circle cx="68" cy="61" r="1.2" fill="#ffffff" />
+      <circle cx="94" cy="61" r="1.2" fill="#ffffff" />
+
+      <!-- Cheeks -->
+      <ellipse cx="61" cy="71" rx="4.5" ry="2.5" fill="rgba(224,104,59,0.35)" />
+      <ellipse cx="99" cy="71" rx="4.5" ry="2.5" fill="rgba(224,104,59,0.35)" />
+
+      ${mouthSVG}
+      ${eyewearSVG}
+      ${frontHair}
+      ${beanieSVG}
+
+      <!-- Arms -->
+      ${
+        shortSleeves
+          ? `<rect x="28" y="102" width="16" height="62" rx="8" fill="${skin}" />
+             <rect x="116" y="102" width="16" height="62" rx="8" fill="${skin}" />
+             <rect x="27" y="100" width="18" height="24" rx="7" fill="${sleeveColor}" />
+             <rect x="115" y="100" width="18" height="24" rx="7" fill="${sleeveColor}" />`
+          : `<rect x="27" y="100" width="18" height="64" rx="8" fill="${sleeveColor}" />
+             <rect x="115" y="100" width="18" height="64" rx="8" fill="${sleeveColor}" />
+             <circle cx="36" cy="166" r="7" fill="${skin}" />
+             <circle cx="124" cy="166" r="7" fill="${skin}" />`
+      }
+
+      <!-- Torso -->
+      <rect x="46" y="98" width="68" height="76" rx="16" fill="${topColor}" />
+      ${pufferRibs}
+      ${hoodieStrings}
+      ${scarfSVG}
+
+      <!-- Legs -->
+      ${
+        outfit.shorts
+          ? `<rect x="52" y="172" width="22" height="72" rx="8" fill="${skin}" />
+             <rect x="86" y="172" width="22" height="72" rx="8" fill="${skin}" />
+             <rect x="50" y="170" width="26" height="36" rx="6" fill="${pantsColor}" />
+             <rect x="84" y="170" width="26" height="36" rx="6" fill="${pantsColor}" />`
+          : `<rect x="51" y="170" width="24" height="76" rx="8" fill="${pantsColor}" />
+             <rect x="85" y="170" width="24" height="76" rx="8" fill="${pantsColor}" />`
+      }
+
+      <!-- Footwear -->
+      <rect x="46" y="${outfit.boots ? 236 : 242}" width="30" height="${outfit.boots ? 22 : 16}" rx="7" fill="${shoeColor}" />
+      <rect x="84" y="${outfit.boots ? 236 : 242}" width="30" height="${outfit.boots ? 22 : 16}" rx="7" fill="${shoeColor}" />
+    </svg>
+  `;
+}
+
+function refreshAvatarPreview(outfitConfig) {
+  const step1Mount = document.getElementById("step1AvatarMount");
+  if (step1Mount) {
+    step1Mount.innerHTML = buildCharacterSVG({
+      tier: "hoodie",
+      beanie: false,
+      sunglasses: false,
+      scarf: false,
+      shorts: false,
+      boots: false
+    });
+  }
+  const step2Mount = document.getElementById("step2AvatarMount");
+  if (step2Mount && outfitConfig) {
+    step2Mount.innerHTML = buildCharacterSVG(outfitConfig);
+  }
+}
+
+// Wire up Step 1 Avatar Controls
+document.querySelectorAll("#skinSwatches .color-swatch").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#skinSwatches .color-swatch").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.avatar.skin = btn.dataset.skin;
+    refreshAvatarPreview();
+  });
+});
+
+document.querySelectorAll("#hairStylePills .style-pill").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#hairStylePills .style-pill").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.avatar.hairStyle = btn.dataset.hair;
+    refreshAvatarPreview();
+  });
+});
+
+document.querySelectorAll("#hairColorSwatches .color-swatch").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#hairColorSwatches .color-swatch").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.avatar.hairColor = btn.dataset.hcolor;
+    refreshAvatarPreview();
+  });
+});
+
+document.getElementById("toggleGlassesBtn").addEventListener("click", (e) => {
+  state.avatar.glasses = !state.avatar.glasses;
+  e.target.textContent = `Glasses: ${state.avatar.glasses ? "On" : "Off"}`;
+  e.target.classList.toggle("active", state.avatar.glasses);
+  refreshAvatarPreview();
+});
+
+document.getElementById("toggleSmileBtn").addEventListener("click", (e) => {
+  state.avatar.mood = state.avatar.mood === "happy" ? "cool" : "happy";
+  e.target.textContent = `Mood: ${state.avatar.mood === "happy" ? "Happy" : "Smirk"}`;
+  refreshAvatarPreview();
+});
+
+// Initialize preview on load
+refreshAvatarPreview();
 
 // Elements
 const step1 = document.getElementById("step1Section");
@@ -73,7 +312,6 @@ document.getElementById("unitToggle").addEventListener("click", () => {
   }
 });
 
-// Read all 6 preference groups
 function collectPreferences() {
   document.querySelectorAll(".checkbox-grid[data-category]").forEach(grid => {
     const cat = grid.dataset.category;
@@ -98,6 +336,7 @@ editPrefsBtn.addEventListener("click", () => {
   editPrefsBtn.classList.add("hidden");
   badge2.classList.remove("active");
   badge1.classList.add("active");
+  refreshAvatarPreview();
 });
 
 // Demo Preset Chips
@@ -170,7 +409,7 @@ function pickFromCloset(categoryList, preferredOptions, fallback) {
   return categoryList.length ? categoryList[0] : fallback;
 }
 
-// Personalized Recommendation Engine
+// Personalized Recommendation Engine + Avatar Outfit Sync
 function renderDashboard() {
   const w = state.currentWeather;
   const p = state.preferences;
@@ -189,13 +428,18 @@ function renderDashboard() {
   const tops = [];
   const bottoms = [];
   const gear = [];
-  let torsoColor = "#e0683b";
-  let legColor = "#4b5563";
-  let hatColor = "transparent";
   let summary = "";
 
+  const avatarOutfit = {
+    tier: "hoodie",
+    beanie: false,
+    sunglasses: false,
+    scarf: false,
+    shorts: false,
+    boots: false
+  };
+
   if (feels <= state.coldThresholdF - 18) {
-    // Deep Cold
     tops.push(pickFromCloset(p.tops, ["Long Sleeve Shirts", "Button-ups / Polos"], "Thermal Top"));
     tops.push(pickFromCloset(p.outerwear, ["Heavy Coats / Puffers", "Hoodies & Sweatshirts"], "Heavy Winter Coat"));
     bottoms.push(pickFromCloset(p.bottoms, ["Jeans", "Chinos / Trousers", "Sweatpants / Joggers"], "Warm Pants"));
@@ -203,38 +447,52 @@ function renderDashboard() {
     if (p.accessories.includes("Caps / Beanies")) gear.push("Warm Beanie");
     if (p.accessories.includes("Scarves & Gloves")) gear.push("Scarves & Gloves");
     else gear.push("Gloves Recommended");
-    torsoColor = "#3b82f6";
-    hatColor = "#f59e0b";
+
+    avatarOutfit.tier = "puffer";
+    avatarOutfit.beanie = true;
+    avatarOutfit.scarf = true;
+    avatarOutfit.boots = true;
     summary = `Well below your ${formatTemp(state.coldThresholdF)} cold threshold—full insulated layers required.`;
   } else if (feels <= state.coldThresholdF) {
-    // Below User's Cold Threshold
     tops.push(pickFromCloset(p.tops, ["Long Sleeve Shirts", "Button-ups / Polos", "T-Shirts"], "Long Sleeve Top"));
     tops.push(pickFromCloset(p.outerwear, ["Hoodies & Sweatshirts", "Light Sweaters & Cardigans", "Light Jackets (Denim, Leather)"], "Midweight Layer"));
     bottoms.push(pickFromCloset(p.bottoms, ["Jeans", "Chinos / Trousers", "Sweatpants / Joggers"], "Full-Length Pants"));
     bottoms.push(pickFromCloset(p.footwear, ["Boots", "Sneakers", "Loafers / Dress Shoes"], "Closed-Toe Shoes"));
-    if (p.accessories.includes("Caps / Beanies") && w.windMph >= 12) gear.push("Cap / Beanie");
-    torsoColor = "#e0683b";
+    if (p.accessories.includes("Caps / Beanies") && w.windMph >= 12) {
+      gear.push("Cap / Beanie");
+      avatarOutfit.beanie = true;
+    }
+
+    avatarOutfit.tier = "hoodie";
+    avatarOutfit.boots = p.footwear.includes("Boots");
     summary = `Below your ${formatTemp(state.coldThresholdF)} cold threshold—add a warm outer layer.`;
   } else if (feels < state.hotThresholdF) {
-    // Inside User's Ideal Comfort Zone
     tops.push(pickFromCloset(p.tops, ["T-Shirts", "Button-ups / Polos", "Blouses / Dress Shirts", "Long Sleeve Shirts"], "Breathable Top"));
     if (feels <= state.coldThresholdF + 10 && p.outerwear.length) {
       tops.push(pickFromCloset(p.outerwear, ["Light Sweaters & Cardigans", "Light Jackets (Denim, Leather)"], "Optional Light Layer"));
+      avatarOutfit.tier = "hoodie";
+    } else {
+      avatarOutfit.tier = "tshirt";
     }
     bottoms.push(pickFromCloset(p.bottoms, ["Chinos / Trousers", "Jeans", "Skirts / Dresses", "Shorts"], "Comfortable Bottoms"));
     bottoms.push(pickFromCloset(p.footwear, ["Sneakers", "Loafers / Dress Shoes"], "Everyday Shoes"));
-    if (p.accessories.includes("Sunglasses") && w.condition.includes("Clear")) gear.push("Sunglasses");
-    torsoColor = "#f59e0b";
+    if (p.accessories.includes("Sunglasses") && w.condition.includes("Clear")) {
+      gear.push("Sunglasses");
+      avatarOutfit.sunglasses = true;
+    }
     summary = `Right inside your ${formatTemp(state.coldThresholdF)}–${formatTemp(state.hotThresholdF)} comfort sweet spot.`;
   } else {
-    // Above User's Hot Threshold
     tops.push(pickFromCloset(p.tops, ["Tank Tops", "T-Shirts", "Blouses / Dress Shirts"], "Lightweight Top"));
     bottoms.push(pickFromCloset(p.bottoms, ["Shorts", "Skirts / Dresses", "Chinos / Trousers"], "Light Bottoms"));
     bottoms.push(pickFromCloset(p.footwear, ["Sandals / Slides", "Sneakers"], "Breathable Footwear"));
-    if (p.accessories.includes("Sunglasses")) gear.push("Sunglasses");
+    if (p.accessories.includes("Sunglasses")) {
+      gear.push("Sunglasses");
+      avatarOutfit.sunglasses = true;
+    }
     if (p.accessories.includes("Caps / Beanies")) gear.push("Sun Cap");
-    torsoColor = "#10b981";
-    legColor = "#9ca3af";
+
+    avatarOutfit.tier = "tshirt";
+    avatarOutfit.shorts = true;
     summary = `Above your ${formatTemp(state.hotThresholdF)} heat threshold—keep fabrics light and breathable.`;
   }
 
@@ -245,14 +503,7 @@ function renderDashboard() {
   }
 
   document.getElementById("decisionSummary").textContent = summary;
-
-  // Update SVG Avatar
-  document.getElementById("svgTorso").setAttribute("fill", torsoColor);
-  document.getElementById("svgLeftArm").setAttribute("fill", torsoColor);
-  document.getElementById("svgRightArm").setAttribute("fill", torsoColor);
-  document.getElementById("svgLeftLeg").setAttribute("fill", legColor);
-  document.getElementById("svgRightLeg").setAttribute("fill", legColor);
-  document.getElementById("svgHat").setAttribute("fill", hatColor);
+  refreshAvatarPreview(avatarOutfit);
 
   renderTags("topTags", tops);
   renderTags("bottomTags", bottoms);
