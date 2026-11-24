@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Weather-Wear: Smart Commuter Outfit & Gear Recommender built for MGIS130." />
   <title>Weather-Wear | Smart Outfit &amp; Gear Recommender</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -10,15 +11,24 @@
   <div class="app-container">
     <!-- Header -->
     <header>
-      <div class="logo">Weather-Wear</div>
+      <div>
+        <div class="logo">Weather-Wear</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+          Smart Commuter Outfit &amp; Gear Decision Engine
+        </p>
+      </div>
       <div class="header-controls">
-        <button id="unitToggle" class="unit-toggle-btn" type="button">°F / mph</button>
-        <button id="editPrefsBtn" class="btn-secondary hidden" type="button">Edit Preferences</button>
+        <button id="unitToggle" class="unit-toggle-btn" type="button" title="Switch between Imperial and Metric units">
+          °F / mph
+        </button>
+        <button id="editPrefsBtn" class="btn-secondary hidden" type="button">
+          Edit Preferences
+        </button>
       </div>
     </header>
 
     <!-- Step Indicator -->
-    <div class="step-indicator-container">
+    <div class="step-indicator-container" role="navigation" aria-label="Setup Progress">
       <div id="badgeStep1" class="step-badge active">
         <span class="step-number">1</span>
         <span>Comfort Profile</span>
@@ -34,7 +44,7 @@
     <section id="step1Section" class="card">
       <h2 style="margin-bottom: 8px;">Calibrate Your Thermal Comfort</h2>
       <p style="color: var(--text-muted); margin-bottom: 22px; font-size: 0.95rem;">
-        Adjust how sensitive you are to cold and select the gear you own so recommendations match your real wardrobe.
+        Adjust how sensitive you are to cold and check the gear you own so recommendations match your real wardrobe.
       </p>
 
       <div class="survey-group">
@@ -64,9 +74,9 @@
 
       <div class="wizard-actions">
         <span style="color: var(--text-muted); font-size: 0.85rem; align-self: center;">
-          Powered by keyless Open-Meteo data
+          Zero-secret Open-Meteo integration &bull; Local browser state only
         </span>
-        <button id="toDashboardBtn" class="btn-primary" type="button">Get My Outfit →</button>
+        <button id="toDashboardBtn" class="btn-primary" type="button">Get My Outfit &rarr;</button>
       </div>
     </section>
 
@@ -84,7 +94,13 @@
 
       <!-- City Search -->
       <form id="citySearchForm" class="search-bar">
-        <input type="text" id="cityInput" placeholder="Enter city (e.g., Rochester, NY or Boston)..." value="Rochester" />
+        <input
+          type="text"
+          id="cityInput"
+          placeholder="Enter city (e.g., Rochester, NY or Boston)..."
+          value="Rochester"
+          aria-label="City name"
+        />
         <button type="submit" class="btn-primary">Check Weather</button>
       </form>
 
@@ -112,7 +128,7 @@
             <div class="avatar-box">
               <h4>Layer Preview</h4>
               <div class="model-avatar-container">
-                <svg class="human-silhouette" viewBox="0 0 100 220" aria-label="Outfit Layer Preview">
+                <svg class="human-silhouette" viewBox="0 0 100 220" role="img" aria-label="Outfit Layer Preview">
                   <!-- Head -->
                   <circle cx="50" cy="26" r="14" fill="#d1d5db" />
                   <!-- Hat / Beanie -->
@@ -152,11 +168,25 @@
 
       <!-- Bottom Card: Quick Gear Q&A Assistant -->
       <div class="card">
-        <h3>Commuter Gear Assistant</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <h3>Commuter Gear Assistant</h3>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="demo-chip" onclick="document.getElementById('chatInput').value='Do I need an umbrella?'; document.getElementById('chatForm').requestSubmit();">
+              Umbrella?
+            </button>
+            <button type="button" class="demo-chip" onclick="document.getElementById('chatInput').value='Will I be cold walking to class?'; document.getElementById('chatForm').requestSubmit();">
+              Cold walking?
+            </button>
+            <button type="button" class="demo-chip" onclick="document.getElementById('chatInput').value='Can I wear a skirt or shorts today?'; document.getElementById('chatForm').requestSubmit();">
+              Skirt / shorts?
+            </button>
+          </div>
+        </div>
+
         <div class="chat-container">
           <div id="chatMessages" class="chat-messages">
             <div class="chat-bubble bot">
-              Ask me anything about today's conditions—like "Do I need an umbrella?" or "Will I be cold walking to class?"
+              Ask me anything about today's conditions—or click one of the quick questions above!
             </div>
           </div>
           <form id="chatForm" class="chat-input-form">
@@ -166,6 +196,11 @@
         </div>
       </div>
     </section>
+
+    <!-- Project Footer -->
+    <footer style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding-bottom: 12px;">
+      MGIS130 Build Project &bull; Hosted on GitHub Pages (Free Tier) &bull; Weather data via Open-Meteo
+    </footer>
   </div>
 
   <script src="app.js"></script>
