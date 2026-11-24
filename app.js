@@ -6,6 +6,7 @@ const state = {
     skin: "#ffdbac",
     hairStyle: "short", // short, long, bun, curly
     hairColor: "#1f1a17",
+    outfitStyle: "casual", // casual, formal, athletic, streetwear, cozy
     glasses: false,
     mood: "happy" // happy, cool
   },
@@ -34,11 +35,11 @@ const PRESETS = {
   summer: { city: "Rochester, NY (Demo)", tempF: 86, feelsLikeF: 90, windMph: 5, precipMm: 0.0, condition: "Sunny & Humid" }
 };
 
-// Build Bitmoji-Style Illustrated SVG Character
-function buildCharacterSVG(outfit = { tier: "casual", beanie: false, sunglasses: false, scarf: false, shorts: false, boots: false }) {
-  const { skin, hairStyle, hairColor, glasses, mood } = state.avatar;
+// Build Bitmoji-Style Illustrated SVG Character with Clothing Style Aesthetics
+function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses: false, scarf: false, shorts: false, boots: false }) {
+  const { skin, hairStyle, hairColor, outfitStyle, glasses, mood } = state.avatar;
 
-  // Back hair layer (for long waves / curly afro)
+  // Back hair layer
   let backHair = "";
   if (hairStyle === "long") {
     backHair = `<path d="M44 48 C34 72, 34 115, 42 135 L118 135 C126 115, 126 72, 116 48 Z" fill="${hairColor}" />`;
@@ -54,7 +55,7 @@ function buildCharacterSVG(outfit = { tier: "casual", beanie: false, sunglasses:
     backHair = `<circle cx="80" cy="22" r="15" fill="${hairColor}" />`;
   }
 
-  // Front hair / bangs (hidden if wearing a winter beanie)
+  // Front hair (or Streetwear snapback cap if not freezing)
   let frontHair = "";
   if (!outfit.beanie) {
     if (hairStyle === "short") {
@@ -70,16 +71,22 @@ function buildCharacterSVG(outfit = { tier: "casual", beanie: false, sunglasses:
     }
   }
 
-  // Beanie hat overlay
-  const beanieSVG = outfit.beanie
-    ? `
+  // Headwear: Winter Beanie OR Streetwear Cap
+  let headwearSVG = "";
+  if (outfit.beanie) {
+    headwearSVG = `
       <path d="M49 52 C49 24, 111 24, 111 52 Z" fill="#e0683b" />
       <rect x="47" y="47" width="66" height="11" rx="5" fill="#f59e0b" />
       <circle cx="80" cy="22" r="7" fill="#f59e0b" />
-    `
-    : "";
+    `;
+  } else if (outfitStyle === "streetwear") {
+    headwearSVG = `
+      <path d="M50 48 C50 26, 110 26, 110 48 Z" fill="#18181b" />
+      <rect x="48" y="44" width="76" height="7" rx="3.5" fill="#e0683b" />
+    `;
+  }
 
-  // Eyewear (Sunglasses override in hot sun, otherwise user's glasses)
+  // Eyewear
   let eyewearSVG = "";
   if (outfit.sunglasses) {
     eyewearSVG = `
@@ -95,48 +102,84 @@ function buildCharacterSVG(outfit = { tier: "casual", beanie: false, sunglasses:
     `;
   }
 
-  // Expression
   const mouthSVG =
     mood === "cool"
       ? `<path d="M72 78 Q82 81 90 75" fill="none" stroke="#3f2a1d" stroke-width="2.5" stroke-linecap="round" />`
       : `<path d="M70 76 Q80 86 90 76" fill="none" stroke="#3f2a1d" stroke-width="2.5" stroke-linecap="round" />`;
 
-  // Clothing Palette & Layer Geometry
+  // Style-based colors & garment details
   let topColor = "#e0683b";
-  let sleeveColor = "#e0683b";
-  let shortSleeves = false;
-  let pufferRibs = "";
-  let hoodieStrings = "";
+  let sleeveColor = "#c8562b";
+  let pantsColor = "#334155";
+  let shoeColor = outfit.boots ? "#78350f" : "#f3f4f6";
+  let shortSleeves = outfit.tier === "tshirt";
+  let outfitDetailsSVG = "";
 
+  if (outfitStyle === "formal") {
+    topColor = "#1e293b";
+    sleeveColor = "#0f172a";
+    pantsColor = "#1e293b";
+    shoeColor = "#111827";
+    outfitDetailsSVG = `
+      <polygon points="68,98 80,118 92,98" fill="#f8fafc" />
+      <polygon points="77,104 83,104 81,134 79,134" fill="#e0683b" />
+    `;
+  } else if (outfitStyle === "athletic") {
+    topColor = "#0284c7";
+    sleeveColor = "#0369a1";
+    pantsColor = "#1e293b";
+    shoeColor = "#38bdf8";
+    outfitDetailsSVG = `
+      <line x1="52" y1="100" x2="52" y2="172" stroke="#38bdf8" stroke-width="3" />
+      <line x1="108" y1="100" x2="108" y2="172" stroke="#38bdf8" stroke-width="3" />
+      <line x1="54" y1="172" x2="54" y2="242" stroke="#38bdf8" stroke-width="2.5" />
+      <line x1="106" y1="172" x2="106" y2="242" stroke="#38bdf8" stroke-width="2.5" />
+    `;
+  } else if (outfitStyle === "streetwear") {
+    topColor = "#18181b";
+    sleeveColor = "#27272a";
+    pantsColor = "#3f3f46";
+    shoeColor = "#e0683b";
+    outfitDetailsSVG = `
+      <rect x="58" y="116" width="44" height="16" rx="4" fill="#e0683b" />
+      <line x1="73" y1="100" x2="73" y2="114" stroke="#f3f4f6" stroke-width="2" />
+      <line x1="87" y1="100" x2="87" y2="114" stroke="#f3f4f6" stroke-width="2" />
+    `;
+  } else if (outfitStyle === "cozy") {
+    topColor = "#d97706";
+    sleeveColor = "#b45309";
+    pantsColor = "#57534e";
+    shoeColor = "#d6d3d1";
+    outfitDetailsSVG = `
+      <line x1="48" y1="118" x2="112" y2="118" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
+      <line x1="48" y1="138" x2="112" y2="138" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
+      <line x1="48" y1="158" x2="112" y2="158" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
+    `;
+  } else {
+    // Casual
+    outfitDetailsSVG = `
+      <line x1="73" y1="100" x2="73" y2="124" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" />
+      <line x1="87" y1="100" x2="87" y2="124" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" />
+    `;
+  }
+
+  // Winter Puffer override when freezing
   if (outfit.tier === "puffer") {
     topColor = "#2563eb";
     sleeveColor = "#1d4ed8";
-    pufferRibs = `
+    shortSleeves = false;
+    outfitDetailsSVG = `
       <line x1="46" y1="115" x2="114" y2="115" stroke="#1e40af" stroke-width="2" />
       <line x1="46" y1="135" x2="114" y2="135" stroke="#1e40af" stroke-width="2" />
       <line x1="46" y1="155" x2="114" y2="155" stroke="#1e40af" stroke-width="2" />
       <line x1="80" y1="98" x2="80" y2="174" stroke="#93c5fd" stroke-width="2" />
     `;
-  } else if (outfit.tier === "hoodie") {
-    topColor = "#e0683b";
-    sleeveColor = "#c8562b";
-    hoodieStrings = `
-      <line x1="73" y1="100" x2="73" y2="124" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" />
-      <line x1="87" y1="100" x2="87" y2="124" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" />
-    `;
-  } else if (outfit.tier === "tshirt") {
-    topColor = "#10b981";
-    sleeveColor = "#059669";
-    shortSleeves = true;
   }
 
   const scarfSVG = outfit.scarf
     ? `<rect x="58" y="92" width="44" height="13" rx="6" fill="#f59e0b" />
        <rect x="86" y="100" width="11" height="28" rx="4" fill="#d97706" />`
     : "";
-
-  const pantsColor = outfit.shorts ? "#64748b" : "#334155";
-  const shoeColor = outfit.boots ? "#78350f" : "#f3f4f6";
 
   return `
     <svg viewBox="0 0 160 280" style="width:100%; height:100%;" role="img" aria-label="Custom Character Avatar">
@@ -165,7 +208,7 @@ function buildCharacterSVG(outfit = { tier: "casual", beanie: false, sunglasses:
       ${mouthSVG}
       ${eyewearSVG}
       ${frontHair}
-      ${beanieSVG}
+      ${headwearSVG}
 
       <!-- Arms -->
       ${
@@ -182,8 +225,7 @@ function buildCharacterSVG(outfit = { tier: "casual", beanie: false, sunglasses:
 
       <!-- Torso -->
       <rect x="46" y="98" width="68" height="76" rx="16" fill="${topColor}" />
-      ${pufferRibs}
-      ${hoodieStrings}
+      ${outfitDetailsSVG}
       ${scarfSVG}
 
       <!-- Legs -->
@@ -222,48 +264,66 @@ function refreshAvatarPreview(outfitConfig) {
   }
 }
 
-// Wire up Step 1 Avatar Controls
-document.querySelectorAll("#skinSwatches .color-swatch").forEach(btn => {
+// Wire up Step 1 Bitmoji Controls
+document.querySelectorAll("#skinSwatches .bitmoji-tile").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll("#skinSwatches .color-swatch").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("#skinSwatches .bitmoji-tile").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     state.avatar.skin = btn.dataset.skin;
+    document.getElementById("skinNameLabel").textContent = btn.dataset.name;
     refreshAvatarPreview();
   });
 });
 
-document.querySelectorAll("#hairStylePills .style-pill").forEach(btn => {
+document.querySelectorAll("#hairStylePills .bitmoji-tile").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll("#hairStylePills .style-pill").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("#hairStylePills .bitmoji-tile").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     state.avatar.hairStyle = btn.dataset.hair;
+    document.getElementById("hairStyleLabel").textContent = btn.dataset.name;
     refreshAvatarPreview();
   });
 });
 
-document.querySelectorAll("#hairColorSwatches .color-swatch").forEach(btn => {
+document.querySelectorAll("#hairColorSwatches .bitmoji-tile").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll("#hairColorSwatches .color-swatch").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("#hairColorSwatches .bitmoji-tile").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     state.avatar.hairColor = btn.dataset.hcolor;
+    document.getElementById("hairColorLabel").textContent = btn.dataset.name;
+    document.querySelectorAll(".hair-thumb path, .hair-thumb circle[fill='#1f1a17']").forEach(el => {
+      if (el.getAttribute("fill") !== "#e0ac69") el.setAttribute("fill", state.avatar.hairColor);
+    });
+    refreshAvatarPreview();
+  });
+});
+
+document.querySelectorAll("#avatarStylePills .bitmoji-tile").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#avatarStylePills .bitmoji-tile").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.avatar.outfitStyle = btn.dataset.astyle;
+    document.getElementById("avatarStyleLabel").textContent = btn.dataset.name;
     refreshAvatarPreview();
   });
 });
 
 document.getElementById("toggleGlassesBtn").addEventListener("click", (e) => {
+  const btn = e.currentTarget;
   state.avatar.glasses = !state.avatar.glasses;
-  e.target.textContent = `Glasses: ${state.avatar.glasses ? "On" : "Off"}`;
-  e.target.classList.toggle("active", state.avatar.glasses);
+  document.getElementById("glassesText").textContent = `Glasses: ${state.avatar.glasses ? "On" : "Off"}`;
+  btn.classList.toggle("active", state.avatar.glasses);
   refreshAvatarPreview();
 });
 
 document.getElementById("toggleSmileBtn").addEventListener("click", (e) => {
+  const btn = e.currentTarget;
   state.avatar.mood = state.avatar.mood === "happy" ? "cool" : "happy";
-  e.target.textContent = `Mood: ${state.avatar.mood === "happy" ? "Happy" : "Smirk"}`;
+  document.getElementById("moodEmoji").textContent = state.avatar.mood === "happy" ? "😄" : "😏";
+  document.getElementById("moodText").textContent = state.avatar.mood === "happy" ? "Happy Smile" : "Cool Smirk";
   refreshAvatarPreview();
 });
 
-// Initialize preview on load
 refreshAvatarPreview();
 
 // Elements
@@ -302,7 +362,6 @@ function updateSliderLabels() {
 coldSlider.addEventListener("input", updateSliderLabels);
 hotSlider.addEventListener("input", updateSliderLabels);
 
-// Unit Toggle
 document.getElementById("unitToggle").addEventListener("click", () => {
   state.unit = state.unit === "F" ? "C" : "F";
   document.getElementById("unitToggle").textContent = state.unit === "F" ? "Unit: °F" : "Unit: °C";
@@ -319,7 +378,6 @@ function collectPreferences() {
   });
 }
 
-// Step Navigation
 document.getElementById("toDashboardBtn").addEventListener("click", () => {
   collectPreferences();
   step1.classList.add("hidden");
@@ -339,7 +397,6 @@ editPrefsBtn.addEventListener("click", () => {
   refreshAvatarPreview();
 });
 
-// Demo Preset Chips
 document.querySelectorAll(".demo-chip[data-preset]").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".demo-chip[data-preset]").forEach(b => b.classList.remove("active"));
@@ -355,7 +412,6 @@ document.querySelectorAll(".demo-chip[data-preset]").forEach(btn => {
   });
 });
 
-// City Search Form
 document.getElementById("citySearchForm").addEventListener("submit", (e) => {
   e.preventDefault();
   document.querySelectorAll(".demo-chip[data-preset]").forEach(b => b.classList.remove("active"));
@@ -364,7 +420,6 @@ document.getElementById("citySearchForm").addEventListener("submit", (e) => {
   fetchLiveWeather(city);
 });
 
-// Keyless Open-Meteo API Lookup
 async function fetchLiveWeather(cityName) {
   document.getElementById("conditionBadge").textContent = "Fetching...";
   try {
@@ -409,7 +464,6 @@ function pickFromCloset(categoryList, preferredOptions, fallback) {
   return categoryList.length ? categoryList[0] : fallback;
 }
 
-// Personalized Recommendation Engine + Avatar Outfit Sync
 function renderDashboard() {
   const w = state.currentWeather;
   const p = state.preferences;
@@ -423,7 +477,7 @@ function renderDashboard() {
   document.getElementById("windText").textContent = `Wind: ${formatWind(w.windMph)}`;
   document.getElementById("precipText").textContent = `Precipitation: ${w.precipMm} mm`;
   document.getElementById("thresholdSummary").textContent =
-    `Your Comfort Zone: ${formatTemp(state.coldThresholdF)} (Cold) – ${formatTemp(state.hotThresholdF)} (Hot)`;
+    `Your Comfort Zone: ${formatTemp(state.coldThresholdF)} (Cold) – ${formatTemp(state.hotThresholdF)} (Hot) • Style: ${document.getElementById("avatarStyleLabel").textContent}`;
 
   const tops = [];
   const bottoms = [];
@@ -515,7 +569,6 @@ function renderTags(elementId, items) {
   container.innerHTML = items.map(item => `<span class="tag">${item}</span>`).join("");
 }
 
-// Rule-based Gear Chat Assistant
 document.getElementById("chatForm").addEventListener("submit", (e) => {
   e.preventDefault();
   const input = document.getElementById("chatInput");
