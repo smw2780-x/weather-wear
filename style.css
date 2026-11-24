@@ -3,18 +3,15 @@
    ========================================== */
 :root {
   --primary-color: #e0683b;             /* Glowing Terracotta */
-  --primary-hover: #f0784b;       
+  --primary-hover: #f0784b;
   --primary-light: rgba(224, 104, 59, 0.18);
-  --secondary: #f59e0b;           /* Warm Amber Gold */
-  
+  --secondary: #f59e0b;                 /* Warm Amber Gold */
   --bg-dark: #0f0c0b;
   --bg-gradient: linear-gradient(135deg, #141110 0%, #1e1917 100%);
   --card-bg: rgba(36, 31, 29, 0.85);
   --border-color: rgba(255, 255, 255, 0.15);
-  
-  --text-main: #f3f4f6;           /* Soft Warm Cream */
-  --text-muted: #9ca3af;          /* Warm Slate Taupe */
-  
+  --text-main: #f3f4f6;                 /* Soft Warm Cream */
+  --text-muted: #9ca3af;                /* Warm Slate Taupe */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
@@ -57,6 +54,8 @@ header {
   align-items: center;
   padding-bottom: 16px;
   border-bottom: 2px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .logo {
@@ -64,6 +63,12 @@ header {
   font-weight: 800;
   color: var(--primary-color);
   letter-spacing: -0.5px;
+}
+
+.header-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .card {
@@ -78,6 +83,44 @@ header {
 
 .hidden {
   display: none !important;
+}
+
+/* Demo Mode Bar (For Live Presentation Reliability) */
+.demo-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px dashed rgba(245, 158, 11, 0.45);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+}
+
+.demo-bar span {
+  font-weight: 700;
+  color: var(--secondary);
+  margin-right: 4px;
+}
+
+.demo-chip {
+  background: #2a2320;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 5px 11px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.demo-chip:hover,
+.demo-chip.active {
+  background: var(--secondary);
+  color: #141110;
+  font-weight: 700;
+  border-color: var(--secondary);
 }
 
 /* Step Indicators */
@@ -159,6 +202,12 @@ header {
   border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-main);
+  color: var(--text-main);
 }
 
 .unit-toggle-btn {
@@ -185,8 +234,15 @@ header {
   margin-top: 24px;
 }
 
+/* Survey Form */
 .survey-group {
   margin-bottom: 24px;
+}
+
+.survey-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
 }
 
 .label-with-value {
@@ -224,7 +280,7 @@ input[type="range"] {
 
 .checkbox-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 10px;
   margin-top: 8px;
 }
@@ -240,6 +296,7 @@ input[type="range"] {
   background: #2a2320;
   cursor: pointer;
   transition: var(--transition);
+  margin-bottom: 0;
 }
 
 .checkbox-label:hover {
@@ -275,6 +332,7 @@ input[type="range"] {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .weather-badge {
@@ -285,7 +343,7 @@ input[type="range"] {
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 12px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
 }
@@ -296,11 +354,18 @@ input[type="range"] {
   margin: 10px 0;
 }
 
-/* REALISTIC SVG MODEL STYLING */
+.weather-meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Realistic SVG Model Styling */
 .avatar-and-outfit-container {
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  margin-top: 14px;
 }
 
 .avatar-box {
@@ -343,7 +408,7 @@ input[type="range"] {
 .human-silhouette path,
 .human-silhouette rect,
 .human-silhouette circle {
-  transition: fill 0.35s ease, d 0.35s ease;
+  transition: fill 0.35s ease;
 }
 
 .outfit-details {
@@ -381,7 +446,7 @@ input[type="range"] {
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 360px;
+  height: 300px;
 }
 
 .chat-messages {
@@ -391,13 +456,15 @@ input[type="range"] {
   flex-direction: column;
   gap: 12px;
   margin: 12px 0;
+  padding-right: 4px;
 }
 
 .chat-bubble {
-  max-width: 80%;
+  max-width: 82%;
   padding: 10px 16px;
   border-radius: 18px;
   font-size: 0.9rem;
+  line-height: 1.45;
 }
 
 .chat-bubble.bot {
@@ -434,40 +501,4 @@ input[type="range"] {
   .avatar-and-outfit-container {
     flex-direction: column;
   }
-}
-.hidden {
-  display: none !important;
-}
-
-.checkbox-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-.scale-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--text-muted, #718096);
-  margin-top: 4px;
-}
-
-.survey-group {
-  margin-bottom: 20px;
-}
-
-.survey-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
 }
