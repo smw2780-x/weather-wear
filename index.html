@@ -60,7 +60,7 @@
             </div>
           </div>
 
-          <!-- 2. Facial Features (Eyes, Brows, Face Shape) -->
+          <!-- 2. Facial Features -->
           <div class="control-row">
             <div class="control-row-header">
               <span>2. Facial Features</span>
@@ -124,7 +124,7 @@
             </div>
           </div>
 
-          <!-- 4. Hairstyle Visual Cards -->
+          <!-- 4. Hairstyle Visual Cards (Full Crown Coverage — No Bald Spot) -->
           <div class="control-row">
             <div class="control-row-header">
               <span>4. Hairstyle</span>
@@ -133,8 +133,8 @@
             <div class="bitmoji-grid" id="hairStylePills">
               <button type="button" class="bitmoji-tile active" data-hair="short" data-name="Short Crop">
                 <svg class="hair-thumb" viewBox="0 0 60 60">
-                  <circle cx="30" cy="34" r="16" fill="#e0ac69"/>
-                  <path d="M14 30 C14 14, 46 14, 46 30 C42 22, 18 22, 14 30 Z" fill="#1f1a17"/>
+                  <circle cx="30" cy="35" r="15" fill="#e0ac69"/>
+                  <path d="M13 33 C13 13, 47 13, 47 33 C43 24, 17 24, 13 33 Z" fill="#1f1a17"/>
                 </svg>
                 <span>Short Crop</span>
               </button>
@@ -142,15 +142,15 @@
                 <svg class="hair-thumb" viewBox="0 0 60 60">
                   <path d="M12 28 C8 40, 10 54, 14 56 L46 56 C50 54, 52 40, 48 28 Z" fill="#1f1a17"/>
                   <circle cx="30" cy="34" r="15" fill="#e0ac69"/>
-                  <path d="M14 30 C14 14, 46 14, 46 30 C38 22, 24 22, 14 30 Z" fill="#1f1a17"/>
+                  <path d="M13 32 C13 13, 47 13, 47 32 C38 22, 22 22, 13 32 Z" fill="#1f1a17"/>
                 </svg>
                 <span>Long Waves</span>
               </button>
               <button type="button" class="bitmoji-tile" data-hair="bun" data-name="Top Bun">
                 <svg class="hair-thumb" viewBox="0 0 60 60">
-                  <circle cx="30" cy="12" r="9" fill="#1f1a17"/>
-                  <circle cx="30" cy="34" r="16" fill="#e0ac69"/>
-                  <path d="M14 30 C14 16, 46 16, 46 30 C38 22, 22 22, 14 30 Z" fill="#1f1a17"/>
+                  <circle cx="30" cy="11" r="9" fill="#1f1a17"/>
+                  <circle cx="30" cy="34" r="15" fill="#e0ac69"/>
+                  <path d="M13 32 C13 14, 47 14, 47 32 C38 22, 22 22, 13 32 Z" fill="#1f1a17"/>
                 </svg>
                 <span>Top Bun</span>
               </button>
@@ -196,7 +196,7 @@
             </div>
           </div>
 
-          <!-- 6. Clothing Style Aesthetic -->
+          <!-- 6. Expanded Clothing Style Aesthetic (Includes Feminine Casual, Formal & Athletic Cuts) -->
           <div class="control-row">
             <div class="control-row-header">
               <span>6. Avatar Outfit Style</span>
@@ -207,13 +207,25 @@
                 <span style="font-size:1.3rem;">👕</span>
                 <span>Casual</span>
               </button>
+              <button type="button" class="bitmoji-tile" data-astyle="chic-casual" data-name="Chic Casual (Dress / Skirt)">
+                <span style="font-size:1.3rem;">👗</span>
+                <span>Chic Casual</span>
+              </button>
               <button type="button" class="bitmoji-tile" data-astyle="formal" data-name="Formal / Business">
                 <span style="font-size:1.3rem;">👔</span>
                 <span>Formal</span>
               </button>
+              <button type="button" class="bitmoji-tile" data-astyle="fem-formal" data-name="Blouse & Pencil Skirt">
+                <span style="font-size:1.3rem;">👠</span>
+                <span>Dressy Formal</span>
+              </button>
               <button type="button" class="bitmoji-tile" data-astyle="athletic" data-name="Athletic / Sporty">
                 <span style="font-size:1.3rem;">🏃</span>
                 <span>Athletic</span>
+              </button>
+              <button type="button" class="bitmoji-tile" data-astyle="athleisure" data-name="Athleisure / Yoga">
+                <span style="font-size:1.3rem;">🧘‍♀️</span>
+                <span>Athleisure</span>
               </button>
               <button type="button" class="bitmoji-tile" data-astyle="streetwear" data-name="Streetwear">
                 <span style="font-size:1.3rem;">🧢</span>
@@ -265,8 +277,9 @@
         <label>Preferred Clothing Styles (Select all that apply):</label>
         <div class="checkbox-grid" data-category="styles">
           <label class="checkbox-label"><input type="checkbox" value="Casual" checked /> Casual</label>
+          <label class="checkbox-label"><input type="checkbox" value="Chic / Feminine" /> Chic / Feminine</label>
           <label class="checkbox-label"><input type="checkbox" value="Formal / Business" /> Formal / Business</label>
-          <label class="checkbox-label"><input type="checkbox" value="Athletic / Sporty" /> Athletic / Sporty</label>
+          <label class="checkbox-label"><input type="checkbox" value="Athletic / Athleisure" /> Athletic / Athleisure</label>
           <label class="checkbox-label"><input type="checkbox" value="Streetwear" /> Streetwear</label>
           <label class="checkbox-label"><input type="checkbox" value="Cozy / Lounge" /> Cozy / Lounge</label>
         </div>
@@ -277,10 +290,11 @@
         <label>Tops &amp; Shirts Categories in Your Closet:</label>
         <div class="checkbox-grid" data-category="tops">
           <label class="checkbox-label"><input type="checkbox" value="T-Shirts" checked /> T-Shirts</label>
-          <label class="checkbox-label"><input type="checkbox" value="Tank Tops" /> Tank Tops</label>
+          <label class="checkbox-label"><input type="checkbox" value="Crop Tops / Camis" /> Crop Tops / Camis</label>
           <label class="checkbox-label"><input type="checkbox" value="Button-ups / Polos" checked /> Button-ups / Polos</label>
           <label class="checkbox-label"><input type="checkbox" value="Long Sleeve Shirts" checked /> Long Sleeve Shirts</label>
           <label class="checkbox-label"><input type="checkbox" value="Blouses / Dress Shirts" /> Blouses / Dress Shirts</label>
+          <label class="checkbox-label"><input type="checkbox" value="Athletic Sports Tops" /> Athletic Sports Tops</label>
         </div>
       </div>
 
@@ -290,6 +304,7 @@
         <div class="checkbox-grid" data-category="bottoms">
           <label class="checkbox-label"><input type="checkbox" value="Jeans" checked /> Jeans</label>
           <label class="checkbox-label"><input type="checkbox" value="Chinos / Trousers" checked /> Chinos / Trousers</label>
+          <label class="checkbox-label"><input type="checkbox" value="Leggings / Yoga Pants" /> Leggings / Yoga Pants</label>
           <label class="checkbox-label"><input type="checkbox" value="Shorts" checked /> Shorts</label>
           <label class="checkbox-label"><input type="checkbox" value="Sweatpants / Joggers" /> Sweatpants / Joggers</label>
           <label class="checkbox-label"><input type="checkbox" value="Skirts / Dresses" /> Skirts / Dresses</label>
@@ -302,6 +317,7 @@
         <div class="checkbox-grid" data-category="outerwear">
           <label class="checkbox-label"><input type="checkbox" value="Hoodies & Sweatshirts" checked /> Hoodies &amp; Sweatshirts</label>
           <label class="checkbox-label"><input type="checkbox" value="Light Sweaters & Cardigans" checked /> Light Sweaters &amp; Cardigans</label>
+          <label class="checkbox-label"><input type="checkbox" value="Cropped Blazers / Trench Coats" /> Cropped Blazers / Trench Coats</label>
           <label class="checkbox-label"><input type="checkbox" value="Light Jackets (Denim, Leather)" /> Light Jackets (Denim, Leather)</label>
           <label class="checkbox-label"><input type="checkbox" value="Heavy Coats / Puffers" checked /> Heavy Coats / Puffers</label>
           <label class="checkbox-label"><input type="checkbox" value="Raincoats / Windbreakers" /> Raincoats / Windbreakers</label>
@@ -314,6 +330,7 @@
         <div class="checkbox-grid" data-category="footwear">
           <label class="checkbox-label"><input type="checkbox" value="Sneakers" checked /> Sneakers</label>
           <label class="checkbox-label"><input type="checkbox" value="Boots" checked /> Boots</label>
+          <label class="checkbox-label"><input type="checkbox" value="Heels / Ballet Flats" /> Heels / Ballet Flats</label>
           <label class="checkbox-label"><input type="checkbox" value="Sandals / Slides" /> Sandals / Slides</label>
           <label class="checkbox-label"><input type="checkbox" value="Loafers / Dress Shoes" /> Loafers / Dress Shoes</label>
         </div>
