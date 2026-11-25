@@ -35,7 +35,7 @@
     <section id="step1Section" class="card">
       <h2 style="margin-bottom: 6px;">Step 1: Customize Your Avatar &amp; Preferences</h2>
       <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.95rem;">
-        Build your personal character and set your thermal sensitivity so your avatar dresses for today's weather.
+        Customize your facial features, expression spectrum, and wardrobe preferences so your avatar dresses for today's weather.
       </p>
 
       <!-- Snapchat Bitmoji-Style Avatar Creator -->
@@ -46,10 +46,54 @@
         </div>
 
         <div class="avatar-controls">
-          <!-- 1. Skin Tone Tiles -->
+          <!-- 1. Masculinity to Femininity Spectrum Slider -->
+          <div class="control-row" style="background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <div class="control-row-header">
+              <span>1. Feature &amp; Style Spectrum</span>
+              <strong id="genderSpectrumLabel">Balanced / Androgynous (50%)</strong>
+            </div>
+            <input type="range" id="genderSpectrum" min="0" max="100" step="5" value="50" style="margin: 6px 0;" />
+            <div class="scale-labels">
+              <span>Masculine</span>
+              <span>Androgynous</span>
+              <span>Feminine</span>
+            </div>
+          </div>
+
+          <!-- 2. Facial Features (Eyes, Brows, Face Shape) -->
           <div class="control-row">
             <div class="control-row-header">
-              <span>1. Skin Tone</span>
+              <span>2. Facial Features</span>
+              <strong id="facialSummaryLabel">Natural Brows &bull; Classic Eyes</strong>
+            </div>
+            <div class="bitmoji-grid" id="facialControls">
+              <button type="button" class="bitmoji-tile active" data-eyes="classic" id="cycleEyesBtn">
+                <span style="font-size:1.25rem;">👁️</span>
+                <span id="eyesBtnText">Eyes: Classic</span>
+              </button>
+              <button type="button" class="bitmoji-tile active" data-brows="natural" id="cycleBrowsBtn">
+                <span style="font-size:1.25rem;">🤨</span>
+                <span id="browsBtnText">Brows: Natural</span>
+              </button>
+              <button type="button" class="bitmoji-tile active" data-jaw="balanced" id="cycleJawBtn">
+                <span style="font-size:1.25rem;">🧑</span>
+                <span id="jawBtnText">Face: Balanced</span>
+              </button>
+              <button type="button" class="bitmoji-tile" id="toggleGlassesBtn">
+                <span style="font-size:1.25rem;">👓</span>
+                <span id="glassesText">Glasses: Off</span>
+              </button>
+              <button type="button" class="bitmoji-tile active" id="toggleSmileBtn">
+                <span style="font-size:1.25rem;" id="moodEmoji">😄</span>
+                <span id="moodText">Happy Smile</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Skin Tone Tiles -->
+          <div class="control-row">
+            <div class="control-row-header">
+              <span>3. Skin Tone</span>
               <strong id="skinNameLabel">Porcelain</strong>
             </div>
             <div class="bitmoji-grid" id="skinSwatches">
@@ -80,10 +124,10 @@
             </div>
           </div>
 
-          <!-- 2. Hairstyle Visual Cards -->
+          <!-- 4. Hairstyle Visual Cards -->
           <div class="control-row">
             <div class="control-row-header">
-              <span>2. Hairstyle</span>
+              <span>4. Hairstyle</span>
               <strong id="hairStyleLabel">Short Crop</strong>
             </div>
             <div class="bitmoji-grid" id="hairStylePills">
@@ -122,10 +166,10 @@
             </div>
           </div>
 
-          <!-- 3. Hair Color Tiles -->
+          <!-- 5. Hair Color Tiles -->
           <div class="control-row">
             <div class="control-row-header">
-              <span>3. Hair Color</span>
+              <span>5. Hair Color</span>
               <strong id="hairColorLabel">Jet Black</strong>
             </div>
             <div class="bitmoji-grid" id="hairColorSwatches">
@@ -152,10 +196,10 @@
             </div>
           </div>
 
-          <!-- 4. Clothing Style Aesthetic (Snapchat Outfit Picker) -->
+          <!-- 6. Clothing Style Aesthetic -->
           <div class="control-row">
             <div class="control-row-header">
-              <span>4. Avatar Outfit Style</span>
+              <span>6. Avatar Outfit Style</span>
               <strong id="avatarStyleLabel">Casual</strong>
             </div>
             <div class="bitmoji-grid" id="avatarStylePills">
@@ -178,23 +222,6 @@
               <button type="button" class="bitmoji-tile" data-astyle="cozy" data-name="Cozy / Lounge">
                 <span style="font-size:1.3rem;">🧶</span>
                 <span>Cozy</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 5. Eyewear & Expression -->
-          <div class="control-row">
-            <div class="control-row-header">
-              <span>5. Eyewear &amp; Expression</span>
-            </div>
-            <div class="bitmoji-grid">
-              <button type="button" class="bitmoji-tile" id="toggleGlassesBtn">
-                <span style="font-size:1.3rem;">👓</span>
-                <span id="glassesText">Glasses: Off</span>
-              </button>
-              <button type="button" class="bitmoji-tile active" id="toggleSmileBtn">
-                <span style="font-size:1.3rem;" id="moodEmoji">😄</span>
-                <span id="moodText">Happy Smile</span>
               </button>
             </div>
           </div>
