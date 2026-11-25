@@ -3,6 +3,10 @@ const state = {
   coldThresholdF: 50,
   hotThresholdF: 80,
   avatar: {
+    genderSpectrum: 50, // 0 = Masculine, 50 = Androgynous, 100 = Feminine
+    eyeStyle: "classic", // classic, lashes, soft
+    browStyle: "natural", // natural, bold, arched
+    jawStyle: "balanced", // balanced, defined, soft
     skin: "#ffdbac",
     hairStyle: "short", // short, long, bun, curly
     hairColor: "#1f1a17",
@@ -35,9 +39,21 @@ const PRESETS = {
   summer: { city: "Rochester, NY (Demo)", tempF: 86, feelsLikeF: 90, windMph: 5, precipMm: 0.0, condition: "Sunny & Humid" }
 };
 
-// Build Bitmoji-Style Illustrated SVG Character with Clothing Style Aesthetics
+// Build Customizable Bitmoji-Style SVG Character with Masculinity-Femininity Spectrum & Facial Features
 function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses: false, scarf: false, shorts: false, boots: false }) {
-  const { skin, hairStyle, hairColor, outfitStyle, glasses, mood } = state.avatar;
+  const { genderSpectrum, eyeStyle, browStyle, jawStyle, skin, hairStyle, hairColor, outfitStyle, glasses, mood } = state.avatar;
+  const femRatio = genderSpectrum / 100; // 0.0 (Masculine) -> 1.0 (Feminine)
+
+  // Jaw / Face Contour morphing
+  let headRx = 26;
+  let headHeight = 56;
+  if (jawStyle === "defined") headRx = 16;
+  else if (jawStyle === "soft") headRx = 28;
+  else headRx = Math.round(18 + femRatio * 10);
+
+  // Neck width scales subtly with spectrum
+  const neckW = Math.round(20 - femRatio * 4);
+  const neckX = 80 - neckW / 2;
 
   // Back hair layer
   let backHair = "";
@@ -55,7 +71,7 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     backHair = `<circle cx="80" cy="22" r="15" fill="${hairColor}" />`;
   }
 
-  // Front hair (or Streetwear snapback cap if not freezing)
+  // Front hair
   let frontHair = "";
   if (!outfit.beanie) {
     if (hairStyle === "short") {
@@ -71,7 +87,7 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     }
   }
 
-  // Headwear: Winter Beanie OR Streetwear Cap
+  // Headwear
   let headwearSVG = "";
   if (outfit.beanie) {
     headwearSVG = `
@@ -85,6 +101,49 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
       <rect x="48" y="44" width="76" height="7" rx="3.5" fill="#e0683b" />
     `;
   }
+
+  // Eyebrows based on browStyle + spectrum
+  let browsSVG = "";
+  if (browStyle === "bold") {
+    browsSVG = `
+      <rect x="59" y="52" width="15" height="3.5" rx="1.7" fill="${hairColor}" />
+      <rect x="86" y="52" width="15" height="3.5" rx="1.7" fill="${hairColor}" />
+    `;
+  } else if (browStyle === "arched") {
+    browsSVG = `
+      <path d="M59 54 Q66 49 74 53" fill="none" stroke="${hairColor}" stroke-width="2.2" stroke-linecap="round" />
+      <path d="M86 53 Q94 49 101 54" fill="none" stroke="${hairColor}" stroke-width="2.2" stroke-linecap="round" />
+    `;
+  } else {
+    const browThickness = (3.2 - femRatio * 1.1).toFixed(1);
+    browsSVG = `
+      <path d="M60 53 Q67 51 74 53" fill="none" stroke="${hairColor}" stroke-width="${browThickness}" stroke-linecap="round" />
+      <path d="M86 53 Q93 51 100 53" fill="none" stroke="${hairColor}" stroke-width="${browThickness}" stroke-linecap="round" />
+    `;
+  }
+
+  // Eyes & Lashes
+  const showLashes = eyeStyle === "lashes" || (eyeStyle === "classic" && femRatio >= 0.65);
+  const lashesSVG = showLashes
+    ? `
+      <line x1="62" y1="60" x2="59" y2="58" stroke="#1f1a17" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="98" y1="60" x2="101" y2="58" stroke="#1f1a17" stroke-width="1.5" stroke-linecap="round" />
+    `
+    : "";
+
+  const eyesSVG =
+    eyeStyle === "soft"
+      ? `
+        <path d="M62 63 Q67 58 72 63" fill="none" stroke="#1f1a17" stroke-width="2.4" stroke-linecap="round" />
+        <path d="M88 63 Q93 58 98 63" fill="none" stroke="#1f1a17" stroke-width="2.4" stroke-linecap="round" />
+      `
+      : `
+        <circle cx="67" cy="62" r="3.6" fill="#1f1a17" />
+        <circle cx="93" cy="62" r="3.6" fill="#1f1a17" />
+        <circle cx="68" cy="61" r="1.2" fill="#ffffff" />
+        <circle cx="94" cy="61" r="1.2" fill="#ffffff" />
+        ${lashesSVG}
+      `;
 
   // Eyewear
   let eyewearSVG = "";
@@ -102,10 +161,17 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     `;
   }
 
+  // Cheek warmth & Lip tone scale with spectrum
+  const blushOpacity = (0.18 + femRatio * 0.35).toFixed(2);
+  const lipColor = femRatio >= 0.6 ? "#be4b49" : "#3f2a1d";
   const mouthSVG =
     mood === "cool"
-      ? `<path d="M72 78 Q82 81 90 75" fill="none" stroke="#3f2a1d" stroke-width="2.5" stroke-linecap="round" />`
-      : `<path d="M70 76 Q80 86 90 76" fill="none" stroke="#3f2a1d" stroke-width="2.5" stroke-linecap="round" />`;
+      ? `<path d="M72 78 Q82 81 90 75" fill="none" stroke="${lipColor}" stroke-width="2.6" stroke-linecap="round" />`
+      : `<path d="M70 76 Q80 86 90 76" fill="none" stroke="${lipColor}" stroke-width="2.6" stroke-linecap="round" />`;
+
+  // Torso taper based on Masculinity <-> Femininity slider
+  const torsoW = Math.round(72 - femRatio * 10);
+  const torsoX = 80 - torsoW / 2;
 
   // Style-based colors & garment details
   let topColor = "#e0683b";
@@ -122,7 +188,7 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     shoeColor = "#111827";
     outfitDetailsSVG = `
       <polygon points="68,98 80,118 92,98" fill="#f8fafc" />
-      <polygon points="77,104 83,104 81,134 79,134" fill="#e0683b" />
+      ${femRatio < 0.6 ? `<polygon points="77,104 83,104 81,134 79,134" fill="#e0683b" />` : `<circle cx="80" cy="112" r="2.5" fill="#f59e0b" />`}
     `;
   } else if (outfitStyle === "athletic") {
     topColor = "#0284c7";
@@ -130,10 +196,8 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     pantsColor = "#1e293b";
     shoeColor = "#38bdf8";
     outfitDetailsSVG = `
-      <line x1="52" y1="100" x2="52" y2="172" stroke="#38bdf8" stroke-width="3" />
-      <line x1="108" y1="100" x2="108" y2="172" stroke="#38bdf8" stroke-width="3" />
-      <line x1="54" y1="172" x2="54" y2="242" stroke="#38bdf8" stroke-width="2.5" />
-      <line x1="106" y1="172" x2="106" y2="242" stroke="#38bdf8" stroke-width="2.5" />
+      <line x1="${torsoX + 6}" y1="100" x2="${torsoX + 6}" y2="172" stroke="#38bdf8" stroke-width="3" />
+      <line x1="${torsoX + torsoW - 6}" y1="100" x2="${torsoX + torsoW - 6}" y2="172" stroke="#38bdf8" stroke-width="3" />
     `;
   } else if (outfitStyle === "streetwear") {
     topColor = "#18181b";
@@ -141,7 +205,7 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     pantsColor = "#3f3f46";
     shoeColor = "#e0683b";
     outfitDetailsSVG = `
-      <rect x="58" y="116" width="44" height="16" rx="4" fill="#e0683b" />
+      <rect x="60" y="116" width="40" height="15" rx="4" fill="#e0683b" />
       <line x1="73" y1="100" x2="73" y2="114" stroke="#f3f4f6" stroke-width="2" />
       <line x1="87" y1="100" x2="87" y2="114" stroke="#f3f4f6" stroke-width="2" />
     `;
@@ -151,27 +215,25 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     pantsColor = "#57534e";
     shoeColor = "#d6d3d1";
     outfitDetailsSVG = `
-      <line x1="48" y1="118" x2="112" y2="118" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
-      <line x1="48" y1="138" x2="112" y2="138" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
-      <line x1="48" y1="158" x2="112" y2="158" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
+      <line x1="${torsoX + 3}" y1="118" x2="${torsoX + torsoW - 3}" y2="118" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
+      <line x1="${torsoX + 3}" y1="138" x2="${torsoX + torsoW - 3}" y2="138" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
+      <line x1="${torsoX + 3}" y1="158" x2="${torsoX + torsoW - 3}" y2="158" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4 4" />
     `;
   } else {
-    // Casual
     outfitDetailsSVG = `
       <line x1="73" y1="100" x2="73" y2="124" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" />
       <line x1="87" y1="100" x2="87" y2="124" stroke="#f3f4f6" stroke-width="2" stroke-linecap="round" />
     `;
   }
 
-  // Winter Puffer override when freezing
   if (outfit.tier === "puffer") {
     topColor = "#2563eb";
     sleeveColor = "#1d4ed8";
     shortSleeves = false;
     outfitDetailsSVG = `
-      <line x1="46" y1="115" x2="114" y2="115" stroke="#1e40af" stroke-width="2" />
-      <line x1="46" y1="135" x2="114" y2="135" stroke="#1e40af" stroke-width="2" />
-      <line x1="46" y1="155" x2="114" y2="155" stroke="#1e40af" stroke-width="2" />
+      <line x1="${torsoX}" y1="115" x2="${torsoX + torsoW}" y2="115" stroke="#1e40af" stroke-width="2" />
+      <line x1="${torsoX}" y1="135" x2="${torsoX + torsoW}" y2="135" stroke="#1e40af" stroke-width="2" />
+      <line x1="${torsoX}" y1="155" x2="${torsoX + torsoW}" y2="155" stroke="#1e40af" stroke-width="2" />
       <line x1="80" y1="98" x2="80" y2="174" stroke="#93c5fd" stroke-width="2" />
     `;
   }
@@ -181,29 +243,45 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
        <rect x="86" y="100" width="11" height="28" rx="4" fill="#d97706" />`
     : "";
 
+  // Bottoms: Skirt option when warm + feminine spectrum or user selected Skirts/Dresses
+  const legsSVG = outfit.skirt
+    ? `
+      <rect x="54" y="196" width="20" height="48" rx="8" fill="${skin}" />
+      <rect x="86" y="196" width="20" height="48" rx="8" fill="${skin}" />
+      <polygon points="48,170 112,170 120,206 40,206" fill="${pantsColor}" />
+    `
+    : outfit.shorts
+    ? `
+      <rect x="52" y="172" width="22" height="72" rx="8" fill="${skin}" />
+      <rect x="86" y="172" width="22" height="72" rx="8" fill="${skin}" />
+      <rect x="50" y="170" width="26" height="36" rx="6" fill="${pantsColor}" />
+      <rect x="84" y="170" width="26" height="36" rx="6" fill="${pantsColor}" />
+    `
+    : `
+      <rect x="51" y="170" width="24" height="76" rx="8" fill="${pantsColor}" />
+      <rect x="85" y="170" width="24" height="76" rx="8" fill="${pantsColor}" />
+    `;
+
   return `
     <svg viewBox="0 0 160 280" style="width:100%; height:100%;" role="img" aria-label="Custom Character Avatar">
       ${backHair}
 
       <!-- Neck -->
-      <rect x="71" y="84" width="18" height="18" rx="6" fill="${skin}" />
+      <rect x="${neckX}" y="84" width="${neckW}" height="18" rx="6" fill="${skin}" />
 
       <!-- Ears -->
       <circle cx="51" cy="63" r="6" fill="${skin}" />
       <circle cx="109" cy="63" r="6" fill="${skin}" />
 
       <!-- Head -->
-      <rect x="52" y="34" width="56" height="56" rx="26" fill="${skin}" />
+      <rect x="52" y="34" width="56" height="${headHeight}" rx="${headRx}" fill="${skin}" />
 
-      <!-- Eyes -->
-      <circle cx="67" cy="62" r="3.5" fill="#1f1a17" />
-      <circle cx="93" cy="62" r="3.5" fill="#1f1a17" />
-      <circle cx="68" cy="61" r="1.2" fill="#ffffff" />
-      <circle cx="94" cy="61" r="1.2" fill="#ffffff" />
+      ${browsSVG}
+      ${eyesSVG}
 
       <!-- Cheeks -->
-      <ellipse cx="61" cy="71" rx="4.5" ry="2.5" fill="rgba(224,104,59,0.35)" />
-      <ellipse cx="99" cy="71" rx="4.5" ry="2.5" fill="rgba(224,104,59,0.35)" />
+      <ellipse cx="61" cy="71" rx="4.5" ry="2.5" fill="rgba(224,104,59,${blushOpacity})" />
+      <ellipse cx="99" cy="71" rx="4.5" ry="2.5" fill="rgba(224,104,59,${blushOpacity})" />
 
       ${mouthSVG}
       ${eyewearSVG}
@@ -213,31 +291,23 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
       <!-- Arms -->
       ${
         shortSleeves
-          ? `<rect x="28" y="102" width="16" height="62" rx="8" fill="${skin}" />
-             <rect x="116" y="102" width="16" height="62" rx="8" fill="${skin}" />
-             <rect x="27" y="100" width="18" height="24" rx="7" fill="${sleeveColor}" />
-             <rect x="115" y="100" width="18" height="24" rx="7" fill="${sleeveColor}" />`
-          : `<rect x="27" y="100" width="18" height="64" rx="8" fill="${sleeveColor}" />
-             <rect x="115" y="100" width="18" height="64" rx="8" fill="${sleeveColor}" />
-             <circle cx="36" cy="166" r="7" fill="${skin}" />
-             <circle cx="124" cy="166" r="7" fill="${skin}" />`
+          ? `<rect x="${torsoX - 17}" y="102" width="15" height="62" rx="7.5" fill="${skin}" />
+             <rect x="${torsoX + torsoW + 2}" y="102" width="15" height="62" rx="7.5" fill="${skin}" />
+             <rect x="${torsoX - 18}" y="100" width="17" height="24" rx="7" fill="${sleeveColor}" />
+             <rect x="${torsoX + torsoW + 1}" y="100" width="17" height="24" rx="7" fill="${sleeveColor}" />`
+          : `<rect x="${torsoX - 18}" y="100" width="17" height="64" rx="8" fill="${sleeveColor}" />
+             <rect x="${torsoX + torsoW + 1}" y="100" width="17" height="64" rx="8" fill="${sleeveColor}" />
+             <circle cx="${torsoX - 9.5}" cy="166" r="7" fill="${skin}" />
+             <circle cx="${torsoX + torsoW + 9.5}" cy="166" r="7" fill="${skin}" />`
       }
 
       <!-- Torso -->
-      <rect x="46" y="98" width="68" height="76" rx="16" fill="${topColor}" />
+      <rect x="${torsoX}" y="98" width="${torsoW}" height="76" rx="16" fill="${topColor}" />
       ${outfitDetailsSVG}
       ${scarfSVG}
 
       <!-- Legs -->
-      ${
-        outfit.shorts
-          ? `<rect x="52" y="172" width="22" height="72" rx="8" fill="${skin}" />
-             <rect x="86" y="172" width="22" height="72" rx="8" fill="${skin}" />
-             <rect x="50" y="170" width="26" height="36" rx="6" fill="${pantsColor}" />
-             <rect x="84" y="170" width="26" height="36" rx="6" fill="${pantsColor}" />`
-          : `<rect x="51" y="170" width="24" height="76" rx="8" fill="${pantsColor}" />
-             <rect x="85" y="170" width="24" height="76" rx="8" fill="${pantsColor}" />`
-      }
+      ${legsSVG}
 
       <!-- Footwear -->
       <rect x="46" y="${outfit.boots ? 236 : 242}" width="30" height="${outfit.boots ? 22 : 16}" rx="7" fill="${shoeColor}" />
@@ -255,6 +325,7 @@ function refreshAvatarPreview(outfitConfig) {
       sunglasses: false,
       scarf: false,
       shorts: false,
+      skirt: false,
       boots: false
     });
   }
@@ -264,7 +335,55 @@ function refreshAvatarPreview(outfitConfig) {
   }
 }
 
-// Wire up Step 1 Bitmoji Controls
+// 1. Masculinity <-> Femininity Spectrum Slider Listener
+const genderSlider = document.getElementById("genderSpectrum");
+genderSlider.addEventListener("input", () => {
+  const val = parseInt(genderSlider.value, 10);
+  state.avatar.genderSpectrum = val;
+  let label = `Balanced / Androgynous (${val}%)`;
+  if (val <= 20) label = `Strong Masculine (${100 - val}% Masc)`;
+  else if (val < 45) label = `Soft Masculine (${100 - val}% Masc)`;
+  else if (val > 80) label = `Strong Feminine (${val}% Fem)`;
+  else if (val > 55) label = `Soft Feminine (${val}% Fem)`;
+  document.getElementById("genderSpectrumLabel").textContent = label;
+  refreshAvatarPreview();
+});
+
+// 2. Facial Feature Cyclers (Eyes, Brows, Face Shape)
+const EYE_MODES = ["classic", "lashes", "soft"];
+const BROW_MODES = ["natural", "bold", "arched"];
+const JAW_MODES = ["balanced", "defined", "soft"];
+
+function updateFacialSummary() {
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  document.getElementById("facialSummaryLabel").textContent =
+    `${cap(state.avatar.browStyle)} Brows • ${cap(state.avatar.eyeStyle)} Eyes`;
+}
+
+document.getElementById("cycleEyesBtn").addEventListener("click", () => {
+  const next = EYE_MODES[(EYE_MODES.indexOf(state.avatar.eyeStyle) + 1) % EYE_MODES.length];
+  state.avatar.eyeStyle = next;
+  document.getElementById("eyesBtnText").textContent = `Eyes: ${next.charAt(0).toUpperCase() + next.slice(1)}`;
+  updateFacialSummary();
+  refreshAvatarPreview();
+});
+
+document.getElementById("cycleBrowsBtn").addEventListener("click", () => {
+  const next = BROW_MODES[(BROW_MODES.indexOf(state.avatar.browStyle) + 1) % BROW_MODES.length];
+  state.avatar.browStyle = next;
+  document.getElementById("browsBtnText").textContent = `Brows: ${next.charAt(0).toUpperCase() + next.slice(1)}`;
+  updateFacialSummary();
+  refreshAvatarPreview();
+});
+
+document.getElementById("cycleJawBtn").addEventListener("click", () => {
+  const next = JAW_MODES[(JAW_MODES.indexOf(state.avatar.jawStyle) + 1) % JAW_MODES.length];
+  state.avatar.jawStyle = next;
+  document.getElementById("jawBtnText").textContent = `Face: ${next.charAt(0).toUpperCase() + next.slice(1)}`;
+  refreshAvatarPreview();
+});
+
+// Skin, Hair, Outfit Style, Glasses, Mood Listeners
 document.querySelectorAll("#skinSwatches .bitmoji-tile").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll("#skinSwatches .bitmoji-tile").forEach(b => b.classList.remove("active"));
@@ -490,6 +609,7 @@ function renderDashboard() {
     sunglasses: false,
     scarf: false,
     shorts: false,
+    skirt: false,
     boots: false
   };
 
@@ -537,7 +657,8 @@ function renderDashboard() {
     summary = `Right inside your ${formatTemp(state.coldThresholdF)}–${formatTemp(state.hotThresholdF)} comfort sweet spot.`;
   } else {
     tops.push(pickFromCloset(p.tops, ["Tank Tops", "T-Shirts", "Blouses / Dress Shirts"], "Lightweight Top"));
-    bottoms.push(pickFromCloset(p.bottoms, ["Shorts", "Skirts / Dresses", "Chinos / Trousers"], "Light Bottoms"));
+    const warmBottom = pickFromCloset(p.bottoms, ["Shorts", "Skirts / Dresses", "Chinos / Trousers"], "Light Bottoms");
+    bottoms.push(warmBottom);
     bottoms.push(pickFromCloset(p.footwear, ["Sandals / Slides", "Sneakers"], "Breathable Footwear"));
     if (p.accessories.includes("Sunglasses")) {
       gear.push("Sunglasses");
@@ -546,7 +667,11 @@ function renderDashboard() {
     if (p.accessories.includes("Caps / Beanies")) gear.push("Sun Cap");
 
     avatarOutfit.tier = "tshirt";
-    avatarOutfit.shorts = true;
+    if (warmBottom === "Skirts / Dresses" || state.avatar.genderSpectrum >= 70) {
+      avatarOutfit.skirt = true;
+    } else {
+      avatarOutfit.shorts = true;
+    }
     summary = `Above your ${formatTemp(state.hotThresholdF)} heat threshold—keep fabrics light and breathable.`;
   }
 
