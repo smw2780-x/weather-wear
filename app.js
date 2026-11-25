@@ -10,7 +10,7 @@ const state = {
     skin: "#ffdbac",
     hairStyle: "short", // short, long, bun, curly
     hairColor: "#1f1a17",
-    outfitStyle: "casual", // casual, formal, athletic, streetwear, cozy
+    outfitStyle: "casual", // casual, chic-casual, formal, fem-formal, athletic, athleisure, streetwear, cozy
     glasses: false,
     mood: "happy" // happy, cool
   },
@@ -42,7 +42,11 @@ const PRESETS = {
 function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses: false, scarf: false, shorts: false, skirt: false, boots: false }) {
   const { genderSpectrum, eyeStyle, browStyle, jawStyle, skin, hairStyle, hairColor, outfitStyle, glasses, mood } = state.avatar;
   const femRatio = genderSpectrum / 100; // 0.0 (Masculine) -> 1.0 (Feminine)
-  const isFem = femRatio >= 0.6;
+  const isFem =
+    femRatio >= 0.6 ||
+    outfitStyle === "chic-casual" ||
+    outfitStyle === "fem-formal" ||
+    outfitStyle === "athleisure";
 
   // Jaw / Face Contour
   let headRx = 26;
@@ -66,16 +70,19 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
       <circle cx="80" cy="34" r="22" fill="${hairColor}" />
     `;
   } else if (hairStyle === "bun") {
-    backHair = `<circle cx="80" cy="22" r="15" fill="${hairColor}" />`;
+    backHair = `<circle cx="80" cy="20" r="15" fill="${hairColor}" />`;
   }
 
-  // Front hair
+  // Front hair: Full crown cap covering the top of the head (eliminates any bare scalp/bald spot)
   let frontHair = "";
   if (!outfit.beanie) {
     if (hairStyle === "short") {
-      frontHair = `<path d="M51 54 C51 30, 109 30, 109 54 C104 42, 56 42, 51 54 Z" fill="${hairColor}" />`;
+      frontHair = `
+        <path d="M49 56 C49 24, 111 24, 111 56 C106 43, 54 43, 49 56 Z" fill="${hairColor}" />
+        <path d="M56 44 Q70 50 82 43 Q94 49 104 44" fill="none" stroke="${hairColor}" stroke-width="4" stroke-linecap="round" />
+      `;
     } else if (hairStyle === "long" || hairStyle === "bun") {
-      frontHair = `<path d="M50 56 C50 28, 110 28, 110 56 C98 40, 74 42, 50 56 Z" fill="${hairColor}" />`;
+      frontHair = `<path d="M49 58 C49 24, 111 24, 111 58 C98 40, 74 42, 49 58 Z" fill="${hairColor}" />`;
     } else if (hairStyle === "curly") {
       frontHair = `
         <circle cx="58" cy="38" r="12" fill="${hairColor}" />
@@ -161,7 +168,6 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     `;
   }
 
-  // Cheek warmth & Lip tone
   const blushOpacity = (0.18 + femRatio * 0.38).toFixed(2);
   const lipColor = isFem ? "#e11d48" : "#3f2a1d";
   const mouthSVG =
@@ -169,10 +175,10 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
       ? `<path d="M72 78 Q82 81 90 75" fill="none" stroke="${lipColor}" stroke-width="2.7" stroke-linecap="round" />`
       : `<path d="M70 76 Q80 86 90 76" fill="none" stroke="${lipColor}" stroke-width="2.7" stroke-linecap="round" />`;
 
-  // Dramatic Silhouette Morphing: Broad Block (Masc) vs. Fitted Waist + Flared Skirt (Fem)
-  const shoulderW = Math.round(74 - femRatio * 18); // 74px masc -> 56px fem
-  const waistW = Math.round(72 - femRatio * 26);    // 72px masc -> 46px fem
-  const hipW = Math.round(70 - femRatio * 6);       // 70px masc -> 64px fem
+  // Silhouette proportions
+  const shoulderW = Math.round(74 - (isFem ? 18 : femRatio * 14));
+  const waistW = Math.round(72 - (isFem ? 26 : femRatio * 20));
+  const hipW = Math.round(70 - (isFem ? 6 : femRatio * 4));
   const sLeft = 80 - shoulderW / 2;
   const sRight = 80 + shoulderW / 2;
   const wLeft = 80 - waistW / 2;
@@ -180,25 +186,57 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
   const hLeft = 80 - hipW / 2;
   const hRight = 80 + hipW / 2;
 
-  // High-contrast bright colors so feminine skirts & jackets pop clearly against dark card
   let topColor = "#e0683b";
   let sleeveColor = "#c8562b";
   let bottomColor = "#475569";
   let shoeColor = outfit.boots ? "#92400e" : "#f8fafc";
-  let shortSleeves = outfit.tier === "tshirt" || (isFem && outfit.tier !== "puffer" && outfitStyle === "casual");
+  let shortSleeves = outfit.tier === "tshirt";
   let outfitDetailsSVG = "";
-  const useSkirt = outfit.skirt || (isFem && !outfit.shorts && outfit.tier !== "puffer");
+  let bottomMode = outfit.shorts ? "shorts" : (outfit.skirt || isFem ? "skirt" : "pants");
 
-  if (outfitStyle === "formal") {
-    topColor = isFem ? "#be185d" : "#1e293b";      // Berry blazer (Fem) vs Navy suit (Masc)
-    sleeveColor = isFem ? "#9d174d" : "#0f172a";
-    bottomColor = isFem ? "#fbcfe8" : "#334155";   // Soft blush skirt (Fem) vs Slate trousers (Masc)
+  if (outfitStyle === "chic-casual") {
+    // Feminine Chic Casual: Off-shoulder / scoop rose top + light denim skater skirt
+    topColor = "#fb7185";
+    sleeveColor = "#f43f5e";
+    bottomColor = "#93c5fd";
+    shoeColor = "#ffe4e6";
+    shortSleeves = outfit.tier !== "puffer";
+    bottomMode = outfit.tier === "puffer" ? "pants" : "skirt";
+    outfitDetailsSVG = `
+      <path d="M66 98 Q80 116 94 98" fill="none" stroke="#fff1f2" stroke-width="2.8" />
+      <rect x="${wLeft}" y="144" width="${waistW}" height="5" rx="2" fill="#f59e0b" />
+    `;
+  } else if (outfitStyle === "fem-formal") {
+    // Feminine Dressy Formal: Tailored berry blazer, white silk blouse, high-waisted pencil skirt & heels
+    topColor = "#be185d";
+    sleeveColor = "#9d174d";
+    bottomColor = "#fbcfe8";
+    shoeColor = "#be185d";
+    bottomMode = outfit.tier === "puffer" ? "pants" : "pencil-skirt";
+    outfitDetailsSVG = `
+      <polygon points="69,98 80,124 91,98" fill="#fff1f2" />
+      <circle cx="80" cy="113" r="2.8" fill="#f59e0b" />
+      <rect x="${wLeft}" y="142" width="${waistW}" height="5" rx="2" fill="#f59e0b" />
+    `;
+  } else if (outfitStyle === "athleisure") {
+    // Feminine Athleisure / Yoga: Cropped pink zip jacket + high-waisted yoga leggings
+    topColor = "#ec4899";
+    sleeveColor = "#db2777";
+    bottomColor = "#312e81";
+    shoeColor = "#f9a8d4";
+    bottomMode = "leggings";
+    outfitDetailsSVG = `
+      <rect x="${hLeft}" y="146" width="${hipW}" height="24" fill="#312e81" />
+      <line x1="80" y1="98" x2="80" y2="146" stroke="#fce7f3" stroke-width="2" />
+    `;
+  } else if (outfitStyle === "formal") {
+    topColor = isFem ? "#881337" : "#1e293b";
+    sleeveColor = isFem ? "#9f1239" : "#0f172a";
+    bottomColor = isFem ? "#fecdd3" : "#334155";
     shoeColor = isFem ? "#be185d" : "#111827";
     outfitDetailsSVG = isFem
       ? `
-        <!-- Fitted V-neck blouse + gold waist belt -->
         <polygon points="70,98 80,122 90,98" fill="#fff1f2" />
-        <circle cx="80" cy="112" r="2.6" fill="#f59e0b" />
         <rect x="${wLeft}" y="142" width="${waistW}" height="5" rx="2" fill="#f59e0b" />
       `
       : `
@@ -206,23 +244,26 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
         <polygon points="77,104 83,104 81,134 79,134" fill="#e0683b" />
       `;
   } else if (outfitStyle === "athletic") {
-    topColor = isFem ? "#ec4899" : "#0284c7";      // Vibrant pink crop jacket (Fem) vs Cobalt track top (Masc)
-    sleeveColor = isFem ? "#db2777" : "#0369a1";
-    bottomColor = isFem ? "#f8fafc" : "#1e293b";   // Crisp white tennis skirt (Fem) vs Dark track pants (Masc)
-    shoeColor = isFem ? "#f472b6" : "#38bdf8";
-    outfitDetailsSVG = isFem
-      ? `
-        <line x1="80" y1="98" x2="80" y2="168" stroke="#fce7f3" stroke-width="2" />
+    topColor = isFem ? "#f43f5e" : "#0284c7";
+    sleeveColor = isFem ? "#e11d48" : "#0369a1";
+    bottomColor = isFem ? "#f8fafc" : "#1e293b";
+    shoeColor = isFem ? "#fda4af" : "#38bdf8";
+    if (isFem && outfit.tier !== "puffer") {
+      bottomMode = "skirt"; // Tennis skirt
+      outfitDetailsSVG = `
+        <line x1="80" y1="98" x2="80" y2="168" stroke="#ffe4e6" stroke-width="2" />
         <rect x="${wLeft}" y="146" width="${waistW}" height="6" rx="2" fill="#fbcfe8" />
-      `
-      : `
+      `;
+    } else {
+      outfitDetailsSVG = `
         <line x1="${sLeft + 6}" y1="100" x2="${wLeft + 4}" y2="172" stroke="#38bdf8" stroke-width="3" />
         <line x1="${sRight - 6}" y1="100" x2="${wRight - 4}" y2="172" stroke="#38bdf8" stroke-width="3" />
       `;
+    }
   } else if (outfitStyle === "streetwear") {
-    topColor = isFem ? "#a855f7" : "#18181b";      // Violet cropped hoodie (Fem) vs Black hoodie (Masc)
+    topColor = isFem ? "#a855f7" : "#18181b";
     sleeveColor = isFem ? "#9333ea" : "#27272a";
-    bottomColor = isFem ? "#f43f5e" : "#52525b";   // Coral pleated skirt (Fem) vs Charcoal cargos (Masc)
+    bottomColor = isFem ? "#f43f5e" : "#52525b";
     shoeColor = isFem ? "#fb7185" : "#e0683b";
     outfitDetailsSVG = isFem
       ? `
@@ -236,19 +277,20 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
         <line x1="87" y1="100" x2="87" y2="114" stroke="#f3f4f6" stroke-width="2" />
       `;
   } else if (outfitStyle === "cozy") {
-    topColor = isFem ? "#fb7185" : "#d97706";      // Rose knit sweater (Fem) vs Amber sweater (Masc)
+    topColor = isFem ? "#fb7185" : "#d97706";
     sleeveColor = isFem ? "#f43f5e" : "#b45309";
-    bottomColor = isFem ? "#fef3c7" : "#78716c";   // Cream knit skirt (Fem) vs Stone joggers (Masc)
+    bottomColor = isFem ? "#fef3c7" : "#78716c";
     shoeColor = "#fde68a";
     outfitDetailsSVG = `
       <line x1="${wLeft + 3}" y1="118" x2="${wRight - 3}" y2="118" stroke="#fff1f2" stroke-width="2" stroke-dasharray="4 4" />
       <line x1="${wLeft + 3}" y1="138" x2="${wRight - 3}" y2="138" stroke="#fff1f2" stroke-width="2" stroke-dasharray="4 4" />
     `;
   } else {
-    // Casual
-    topColor = isFem ? "#f43f5e" : "#e0683b";      // Coral scoop-neck top (Fem) vs Terracotta hoodie (Masc)
+    // Default Casual
+    topColor = isFem ? "#f43f5e" : "#e0683b";
     sleeveColor = isFem ? "#e11d48" : "#c8562b";
-    bottomColor = isFem ? "#93c5fd" : "#475569";   // Light denim skater skirt (Fem) vs Slate jeans (Masc)
+    bottomColor = isFem ? "#93c5fd" : "#475569";
+    shortSleeves = outfit.tier === "tshirt" || (isFem && outfit.tier !== "puffer");
     outfitDetailsSVG = isFem
       ? `
         <path d="M68 98 Q80 114 92 98" fill="none" stroke="#ffe4e6" stroke-width="2.5" />
@@ -265,6 +307,7 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     topColor = isFem ? "#9333ea" : "#2563eb";
     sleeveColor = isFem ? "#7e22ce" : "#1d4ed8";
     shortSleeves = false;
+    bottomMode = "pants";
     outfitDetailsSVG = `
       <line x1="${sLeft + 2}" y1="115" x2="${sRight - 2}" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="2" />
       <line x1="${wLeft}" y1="135" x2="${wRight}" y2="135" stroke="rgba(255,255,255,0.3)" stroke-width="2" />
@@ -273,7 +316,6 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
     `;
   }
 
-  // Tapered Torso Polygon
   const torsoPolygon = `
     <path d="
       M ${sLeft + 6} 98
@@ -296,34 +338,48 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
        <rect x="86" y="100" width="11" height="28" rx="4" fill="#d97706" />`
     : "";
 
-  // Bottoms: High-Contrast Flared Pleated Skirt vs. Shorts vs. Trousers
+  // Bottoms Renderer: Flared Skirt, Tailored Pencil Skirt, Fitted Yoga Leggings, Shorts, or Trousers
   const legW = isFem ? 18 : 24;
-  const legsSVG = useSkirt
-    ? `
-      <!-- Visible legs below flared skirt -->
+  let legsSVG = "";
+  if (bottomMode === "skirt") {
+    legsSVG = `
       <rect x="57" y="204" width="16" height="40" rx="8" fill="${skin}" />
       <rect x="87" y="204" width="16" height="40" rx="8" fill="${skin}" />
-      <!-- Flared A-line skirt -->
       <polygon points="${hLeft - 2},166 ${hRight + 2},166 126,212 34,212" fill="${bottomColor}" />
       <line x1="66" y1="170" x2="56" y2="211" stroke="rgba(0,0,0,0.22)" stroke-width="2" />
       <line x1="80" y1="170" x2="80" y2="211" stroke="rgba(0,0,0,0.22)" stroke-width="2" />
       <line x1="94" y1="170" x2="104" y2="211" stroke="rgba(0,0,0,0.22)" stroke-width="2" />
-    `
-    : outfit.shorts
-    ? `
+    `;
+  } else if (bottomMode === "pencil-skirt") {
+    legsSVG = `
+      <rect x="58" y="208" width="15" height="36" rx="7.5" fill="${skin}" />
+      <rect x="87" y="208" width="15" height="36" rx="7.5" fill="${skin}" />
+      <polygon points="${hLeft},166 ${hRight},166 108,214 52,214" fill="${bottomColor}" />
+      <line x1="80" y1="196" x2="80" y2="214" stroke="rgba(0,0,0,0.25)" stroke-width="2" />
+    `;
+  } else if (bottomMode === "leggings") {
+    legsSVG = `
+      <rect x="55" y="168" width="17" height="76" rx="8.5" fill="${bottomColor}" />
+      <rect x="88" y="168" width="17" height="76" rx="8.5" fill="${bottomColor}" />
+      <line x1="57" y1="174" x2="57" y2="238" stroke="#f472b6" stroke-width="2" />
+      <line x1="103" y1="174" x2="103" y2="238" stroke="#f472b6" stroke-width="2" />
+    `;
+  } else if (bottomMode === "shorts") {
+    legsSVG = `
       <rect x="53" y="172" width="${legW}" height="72" rx="8" fill="${skin}" />
       <rect x="${107 - legW}" y="172" width="${legW}" height="72" rx="8" fill="${skin}" />
       <rect x="50" y="168" width="26" height="36" rx="6" fill="${bottomColor}" />
       <rect x="84" y="168" width="26" height="36" rx="6" fill="${bottomColor}" />
-    `
-    : `
+    `;
+  } else {
+    legsSVG = `
       <rect x="52" y="168" width="${legW}" height="78" rx="8" fill="${bottomColor}" />
       <rect x="${108 - legW}" y="168" width="${legW}" height="78" rx="8" fill="${bottomColor}" />
     `;
+  }
 
   const armW = isFem ? 12 : 17;
 
-  // Footwear: Slimmer heeled/ankle boots for Fem vs. wider sneakers for Masc
   const footwearSVG = isFem
     ? `
       <rect x="51" y="238" width="24" height="19" rx="6" fill="${shoeColor}" />
@@ -392,13 +448,17 @@ function buildCharacterSVG(outfit = { tier: "hoodie", beanie: false, sunglasses:
 function refreshAvatarPreview(outfitConfig) {
   const step1Mount = document.getElementById("step1AvatarMount");
   if (step1Mount) {
+    const femDefaultSkirt =
+      state.avatar.genderSpectrum >= 60 ||
+      state.avatar.outfitStyle === "chic-casual" ||
+      state.avatar.outfitStyle === "fem-formal";
     step1Mount.innerHTML = buildCharacterSVG({
       tier: "hoodie",
       beanie: false,
       sunglasses: false,
       scarf: false,
       shorts: false,
-      skirt: state.avatar.genderSpectrum >= 60,
+      skirt: femDefaultSkirt,
       boots: false
     });
   }
@@ -686,9 +746,9 @@ function renderDashboard() {
   };
 
   if (feels <= state.coldThresholdF - 18) {
-    tops.push(pickFromCloset(p.tops, ["Long Sleeve Shirts", "Button-ups / Polos"], "Thermal Top"));
+    tops.push(pickFromCloset(p.tops, ["Long Sleeve Shirts", "Button-ups / Polos", "Blouses / Dress Shirts"], "Thermal Top"));
     tops.push(pickFromCloset(p.outerwear, ["Heavy Coats / Puffers", "Hoodies & Sweatshirts"], "Heavy Winter Coat"));
-    bottoms.push(pickFromCloset(p.bottoms, ["Jeans", "Chinos / Trousers", "Sweatpants / Joggers"], "Warm Pants"));
+    bottoms.push(pickFromCloset(p.bottoms, ["Jeans", "Chinos / Trousers", "Leggings / Yoga Pants", "Sweatpants / Joggers"], "Warm Pants"));
     bottoms.push(pickFromCloset(p.footwear, ["Boots", "Sneakers"], "Insulated Boots"));
     if (p.accessories.includes("Caps / Beanies")) gear.push("Warm Beanie");
     if (p.accessories.includes("Scarves & Gloves")) gear.push("Scarves & Gloves");
@@ -700,10 +760,10 @@ function renderDashboard() {
     avatarOutfit.boots = true;
     summary = `Well below your ${formatTemp(state.coldThresholdF)} cold threshold—full insulated layers required.`;
   } else if (feels <= state.coldThresholdF) {
-    tops.push(pickFromCloset(p.tops, ["Long Sleeve Shirts", "Button-ups / Polos", "T-Shirts"], "Long Sleeve Top"));
-    tops.push(pickFromCloset(p.outerwear, ["Hoodies & Sweatshirts", "Light Sweaters & Cardigans", "Light Jackets (Denim, Leather)"], "Midweight Layer"));
-    bottoms.push(pickFromCloset(p.bottoms, ["Jeans", "Chinos / Trousers", "Sweatpants / Joggers"], "Full-Length Pants"));
-    bottoms.push(pickFromCloset(p.footwear, ["Boots", "Sneakers", "Loafers / Dress Shoes"], "Closed-Toe Shoes"));
+    tops.push(pickFromCloset(p.tops, ["Long Sleeve Shirts", "Blouses / Dress Shirts", "Button-ups / Polos", "T-Shirts"], "Long Sleeve Top"));
+    tops.push(pickFromCloset(p.outerwear, ["Hoodies & Sweatshirts", "Light Sweaters & Cardigans", "Cropped Blazers / Trench Coats", "Light Jackets (Denim, Leather)"], "Midweight Layer"));
+    bottoms.push(pickFromCloset(p.bottoms, ["Jeans", "Leggings / Yoga Pants", "Chinos / Trousers", "Sweatpants / Joggers"], "Full-Length Pants"));
+    bottoms.push(pickFromCloset(p.footwear, ["Boots", "Sneakers", "Heels / Ballet Flats", "Loafers / Dress Shoes"], "Closed-Toe Shoes"));
     if (p.accessories.includes("Caps / Beanies") && w.windMph >= 12) {
       gear.push("Cap / Beanie");
       avatarOutfit.beanie = true;
@@ -713,16 +773,16 @@ function renderDashboard() {
     avatarOutfit.boots = p.footwear.includes("Boots");
     summary = `Below your ${formatTemp(state.coldThresholdF)} cold threshold—add a warm outer layer.`;
   } else if (feels < state.hotThresholdF) {
-    tops.push(pickFromCloset(p.tops, ["T-Shirts", "Button-ups / Polos", "Blouses / Dress Shirts", "Long Sleeve Shirts"], "Breathable Top"));
+    tops.push(pickFromCloset(p.tops, ["Blouses / Dress Shirts", "T-Shirts", "Crop Tops / Camis", "Button-ups / Polos", "Long Sleeve Shirts"], "Breathable Top"));
     if (feels <= state.coldThresholdF + 10 && p.outerwear.length) {
-      tops.push(pickFromCloset(p.outerwear, ["Light Sweaters & Cardigans", "Light Jackets (Denim, Leather)"], "Optional Light Layer"));
+      tops.push(pickFromCloset(p.outerwear, ["Cropped Blazers / Trench Coats", "Light Sweaters & Cardigans", "Light Jackets (Denim, Leather)"], "Optional Light Layer"));
       avatarOutfit.tier = "hoodie";
     } else {
       avatarOutfit.tier = "tshirt";
     }
-    const mildBottom = pickFromCloset(p.bottoms, ["Chinos / Trousers", "Jeans", "Skirts / Dresses", "Shorts"], "Comfortable Bottoms");
+    const mildBottom = pickFromCloset(p.bottoms, ["Skirts / Dresses", "Leggings / Yoga Pants", "Chinos / Trousers", "Jeans", "Shorts"], "Comfortable Bottoms");
     bottoms.push(mildBottom);
-    bottoms.push(pickFromCloset(p.footwear, ["Sneakers", "Loafers / Dress Shoes"], "Everyday Shoes"));
+    bottoms.push(pickFromCloset(p.footwear, ["Heels / Ballet Flats", "Sneakers", "Loafers / Dress Shoes"], "Everyday Shoes"));
     if (p.accessories.includes("Sunglasses") && w.condition.includes("Clear")) {
       gear.push("Sunglasses");
       avatarOutfit.sunglasses = true;
@@ -732,10 +792,10 @@ function renderDashboard() {
     }
     summary = `Right inside your ${formatTemp(state.coldThresholdF)}–${formatTemp(state.hotThresholdF)} comfort sweet spot.`;
   } else {
-    tops.push(pickFromCloset(p.tops, ["Tank Tops", "T-Shirts", "Blouses / Dress Shirts"], "Lightweight Top"));
-    const warmBottom = pickFromCloset(p.bottoms, ["Shorts", "Skirts / Dresses", "Chinos / Trousers"], "Light Bottoms");
+    tops.push(pickFromCloset(p.tops, ["Crop Tops / Camis", "Athletic Sports Tops", "T-Shirts", "Blouses / Dress Shirts"], "Lightweight Top"));
+    const warmBottom = pickFromCloset(p.bottoms, ["Skirts / Dresses", "Shorts", "Leggings / Yoga Pants", "Chinos / Trousers"], "Light Bottoms");
     bottoms.push(warmBottom);
-    bottoms.push(pickFromCloset(p.footwear, ["Sandals / Slides", "Sneakers"], "Breathable Footwear"));
+    bottoms.push(pickFromCloset(p.footwear, ["Sandals / Slides", "Heels / Ballet Flats", "Sneakers"], "Breathable Footwear"));
     if (p.accessories.includes("Sunglasses")) {
       gear.push("Sunglasses");
       avatarOutfit.sunglasses = true;
